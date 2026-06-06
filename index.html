@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F7F2E9">
+<title>Korea · June 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F2E9;
+    --paper-grain:#F2ECDF;
+    --card:#FFFDF8;
+    --ink:#23201A;
+    --ink-soft:#7A7065;
+    --ink-faint:#A89D8E;
+    --line:#E7DECB;
+    --accent:#C75B39;
+    --accent-deep:#9E4327;
+    --concert:#5B4B8A;
+    --concert-soft:#EDE9F5;
+    --gold:#B98A2E;
+    --sea:#3E7C8C;
+    --ok:#5C8A4A;
+    --radius:20px;
+    --shadow:0 1px 2px rgba(50,40,25,.04), 0 8px 24px rgba(70,55,30,.06);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Hanken Grotesk",-apple-system,sans-serif;
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(199,91,57,.05), transparent 45%),
+      radial-gradient(circle at 88% 92%, rgba(91,75,138,.05), transparent 45%);
+    color:var(--ink);
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:contain;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:0 18px env(safe-area-inset-bottom) 18px;padding-bottom:60px;}
+
+  /* ---- sticky header ---- */
+  header{
+    position:sticky;top:0;z-index:50;
+    margin:0 -18px;padding:calc(env(safe-area-inset-top) + 12px) 18px 12px;
+    background:rgba(247,242,233,.82);
+    backdrop-filter:saturate(160%) blur(14px);
+    -webkit-backdrop-filter:saturate(160%) blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .hbar{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .brand{display:flex;align-items:baseline;gap:8px;}
+  .brand .ttl{font-family:"Fraunces",serif;font-weight:600;font-size:21px;letter-spacing:-.01em;}
+  .brand .ttl em{font-style:italic;color:var(--accent);}
+  .clock{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.02em;}
+  .meta{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:12.5px;color:var(--ink-soft);}
+  .dot{width:4px;height:4px;border-radius:50%;background:var(--ink-faint);}
+  .city-pill{font-weight:600;color:var(--ink);}
+
+  /* ---- hero / today ---- */
+  .hero{
+    margin-top:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .hero::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;
+    background:radial-gradient(circle, rgba(199,91,57,.10), transparent 70%);}
+  .hero .eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.16em;color:var(--accent-deep);font-weight:700;}
+  .hero h1{font-family:"Fraunces",serif;font-weight:600;font-size:27px;line-height:1.1;margin:6px 0 2px;letter-spacing:-.01em;}
+  .hero .sub{font-size:13.5px;color:var(--ink-soft);}
+  .next{margin-top:14px;display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--paper-grain);border-radius:14px;border:1px solid var(--line);}
+  .next .tag{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:#fff;background:var(--accent);padding:3px 7px;border-radius:6px;white-space:nowrap;}
+  .next .tag.done{background:var(--ok);}
+  .next .ntxt{flex:1;min-width:0;}
+  .next .ntxt b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .next .ntxt span{font-size:12px;color:var(--ink-soft);}
+  .prog{margin-top:13px;}
+  .prog .bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;}
+  .prog .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-deep));border-radius:99px;transition:width .4s cubic-bezier(.4,0,.2,1);}
+  .prog .lbl{margin-top:6px;font-size:11.5px;color:var(--ink-soft);font-weight:500;}
+
+  /* ---- concert countdown ---- */
+  .concert{
+    margin-top:14px;background:linear-gradient(135deg,#4a3d73,#5B4B8A 60%,#6f5ca0);
+    color:#fff;border-radius:var(--radius);padding:15px 17px;box-shadow:0 10px 26px rgba(70,55,110,.22);
+    display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;
+  }
+  .concert::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,.14), transparent 40%);}
+  .concert .star{font-size:22px;line-height:1;}
+  .concert .cinfo{flex:1;position:relative;}
+  .concert .cinfo .k{font-size:11px;text-transform:uppercase;letter-spacing:.14em;opacity:.85;font-weight:700;}
+  .concert .cinfo .v{font-family:"Fraunces",serif;font-size:18px;font-weight:600;margin-top:1px;}
+  .concert .cd{font-family:"JetBrains Mono",monospace;font-weight:700;text-align:right;position:relative;}
+  .concert .cd .big{font-size:24px;line-height:1;}
+  .concert .cd .small{font-size:10.5px;opacity:.8;letter-spacing:.06em;text-transform:uppercase;margin-top:3px;}
+
+  /* ---- day selector ---- */
+  .days{display:flex;gap:8px;overflow-x:auto;margin:20px -18px 4px;padding:2px 18px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .days::-webkit-scrollbar{display:none;}
+  .daybtn{scroll-snap-align:center;flex:0 0 auto;border:1px solid var(--line);background:var(--card);border-radius:14px;
+    padding:8px 12px;text-align:center;min-width:60px;cursor:pointer;transition:.18s;}
+  .daybtn .d{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);}
+  .daybtn .n{font-family:"Fraunces",serif;font-size:18px;font-weight:600;line-height:1.1;margin-top:1px;}
+  .daybtn.active{background:var(--ink);border-color:var(--ink);}
+  .daybtn.active .d{color:rgba(255,255,255,.6);}
+  .daybtn.active .n{color:#fff;}
+  .daybtn.today::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin:3px auto 0;}
+  .daybtn.active.today::after{background:#fff;}
+
+  /* ---- day header ---- */
+  .dayhead{margin-top:18px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;}
+  .dayhead .l .kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);}
+  .dayhead .l h2{font-family:"Fraunces",serif;font-weight:600;font-size:23px;margin:3px 0 0;letter-spacing:-.01em;}
+  .dayhead .l .theme{font-size:13px;color:var(--ink-soft);margin-top:1px;}
+  .dayhead .r{text-align:right;font-size:12px;color:var(--ink-soft);font-weight:500;white-space:nowrap;}
+  .dayhead .r .city{display:inline-flex;align-items:center;gap:5px;background:var(--paper-grain);border:1px solid var(--line);
+    border-radius:99px;padding:4px 10px;font-weight:600;color:var(--ink);}
+
+  /* ---- list ---- */
+  ul.list{list-style:none;margin:14px 0 0;padding:0;}
+  .section-h{font-family:"Fraunces",serif;font-style:italic;font-size:15px;color:var(--accent-deep);margin:16px 2px 8px;font-weight:500;}
+  li.item{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--line);
+    border-radius:15px;padding:13px 14px;margin-bottom:9px;box-shadow:var(--shadow);transition:.2s;position:relative;}
+  li.item.checked{background:var(--paper-grain);box-shadow:none;border-color:transparent;}
+  li.item.next-up{border-color:var(--accent);box-shadow:0 0 0 2px rgba(199,91,57,.14), var(--shadow);}
+  .cbox{flex:0 0 auto;width:24px;height:24px;border-radius:8px;border:2px solid var(--ink-faint);margin-top:1px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.18s;background:transparent;}
+  .cbox svg{width:14px;height:14px;opacity:0;transform:scale(.5);transition:.18s;}
+  li.checked .cbox{background:var(--accent);border-color:var(--accent);}
+  li.checked .cbox svg{opacity:1;transform:scale(1);stroke:#fff;}
+  .ibody{flex:1;min-width:0;cursor:pointer;}
+  .time{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:12px;color:var(--accent-deep);letter-spacing:-.01em;}
+  li.checked .time{color:var(--ink-faint);}
+  .title{font-size:15px;font-weight:600;margin-top:1px;transition:.18s;}
+  li.checked .title{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--ink-faint);}
+  .note{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  li.checked .note{color:var(--ink-faint);}
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:middle;}
+  .badge.star{background:var(--concert-soft);color:var(--concert);}
+  .badge.heart{background:#FBE9E4;color:var(--accent-deep);}
+  .badge.next{background:var(--accent);color:#fff;}
+  .pin{flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--paper-grain);
+    display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:0;transition:.15s;}
+  .pin:active{transform:scale(.92);}
+  .pin svg{width:16px;height:16px;stroke:var(--sea);}
+  .free{text-align:center;padding:34px 20px;color:var(--ink-soft);background:var(--card);border:1px dashed var(--line);border-radius:15px;}
+  .free .big{font-family:"Fraunces",serif;font-style:italic;font-size:19px;color:var(--ink);margin-bottom:4px;}
+
+  /* ---- stays card ---- */
+  .stays{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 17px;box-shadow:var(--shadow);}
+  .stays h3{font-family:"Fraunces",serif;font-weight:600;font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+  .stays h3 .ln{flex:1;height:1px;background:var(--line);}
+  .stay{display:flex;align-items:flex-start;gap:11px;padding:8px 0;border-top:1px solid var(--line);}
+  .stay:first-of-type{border-top:none;}
+  .stay .where{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;color:var(--ink-faint);letter-spacing:.06em;width:54px;flex:0 0 auto;padding-top:2px;}
+  .stay .nm{font-size:13.5px;font-weight:600;}
+  .stay .sub{font-size:12px;color:var(--ink-soft);}
+  .stay a.pin{margin-left:auto;}
+
+  footer{text-align:center;margin-top:26px;font-size:11.5px;color:var(--ink-faint);}
+  footer .reset{margin-top:8px;font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);background:none;border:none;text-decoration:underline;cursor:pointer;}
+  @keyframes pop{0%{transform:scale(1);}40%{transform:scale(.94);}100%{transform:scale(1);}}
+  li.item.justchecked{animation:pop .25s ease;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hbar">
+      <div class="brand"><span class="ttl">Korea <em>'26</em></span></div>
+      <span class="clock" id="clock">—:—</span>
+    </div>
+    <div class="meta">
+      <span class="city-pill" id="hcity">Seoul</span>
+      <span class="dot"></span>
+      <span id="hdayinfo">Day 1 of 8</span>
+      <span class="dot"></span>
+      <span id="hdate">7 Jun</span>
+    </div>
+  </header>
+
+  <section class="hero" id="hero"></section>
+  <a class="concert" id="concert" href="#day7" style="text-decoration:none;color:#fff"></a>
+
+  <nav class="days" id="days"></nav>
+
+  <main id="main"></main>
+
+  <section class="stays">
+    <h3>Where you're staying <span class="ln"></span></h3>
+    <div class="stay">
+      <span class="where">SEOUL<br>D1–D2</span>
+      <div><div class="nm">Ramada Hotel &amp; Suites Namdaemun</div><div class="sub">Check-in 3 PM · Check-out D3 10 AM</div></div>
+      <a class="pin" target="_blank" href="https://maps.google.com/?q=Ramada+Hotel+Suites+Namdaemun+Seoul"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+    </div>
+    <div class="stay">
+      <span class="where">BUSAN<br>D3–D6</span>
+      <div><div class="nm">Airbnb · Busan</div><div class="sub">Check-in after 5 PM · Check-out D7 11 AM</div></div>
+      <a class="pin" target="_blank" href="https://maps.google.com/?q=Busan+Station"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+    </div>
+    <div class="stay">
+      <span class="where">BUSAN<br>D7</span>
+      <div><div class="nm">Asti Hotel · Busan Station</div><div class="sub">Concert night · last stop before flight</div></div>
+      <a class="pin" target="_blank" href="https://maps.google.com/?q=Asti+Hotel+Busan+Station"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+    </div>
+  </section>
+
+  <footer>
+    Annyeong · 안녕 — have the best trip ♥
+    <br><button class="reset" id="reset">reset all check-offs</button>
+  </footer>
+</div>
+
+<script>
+/* ---------------- Itinerary data ---------------- */
+const TRIP = [
+  { day:1, date:"2026-06-07", weekday:"Sunday", city:"Seoul", theme:"Arrival & Hongdae", items:[
+    {t:"06:00", time:"06:00 AM", title:"Arrive · Incheon Int'l Airport", note:"Take the AREX to Seoul Station", place:"Incheon International Airport"},
+    {t:"08:00", time:"08:00 AM", title:"Drop bags · Ramada Namdaemun", note:"Bag drop before check-in", place:"Ramada Hotel Suites Namdaemun Seoul"},
+    {t:"09:00", time:"09:00 AM", title:"N Seoul Tower", note:"Namsan views over the city", place:"N Seoul Tower"},
+    {t:"11:00", time:"11:00 AM", title:"Lunch · Majang Meat Market", note:"", place:"Majang Meat Market Seoul"},
+    {t:"15:00", time:"03:00 PM", title:"Check in · Ramada Namdaemun", note:"", place:"Ramada Hotel Suites Namdaemun Seoul"},
+    {t:"16:00", time:"04:00 PM", title:"Connects Coffee · Hapjeong", note:"", place:"Connects Coffee Hapjeong"},
+    {t:"19:00", time:"Evening", title:"Hongdae", note:"Buskers, shopping, night eats", place:"Hongdae Seoul"},
+  ]},
+  { day:2, date:"2026-06-08", weekday:"Monday", city:"Seoul", theme:"Myeongdong & Seongsu", items:[
+    {t:"09:00", time:"09:00 AM", title:"Leave hotel", note:""},
+    {t:"10:00", time:"10:00 AM", title:"Color analysis · Colorize", note:"Myeongdong", place:"Colorize Myeongdong"},
+    {section:"Seongsu"},
+    {title:"Tamburins", note:"Flagship fragrance experience", place:"Tamburins Seongsu"},
+    {title:"Jayeondo", note:"Salt bread bakery", place:"Jayeondo Seongsu"},
+    {title:"Musinsa megastore", note:"Trending Korean fashion", place:"Musinsa Seongsu"},
+    {title:"Seongsu Yeonbang", note:"Curated lifestyle goods", place:"Seongsu Yeonbang"},
+    {title:"EQL", note:"Trending Korean fashion", place:"EQL Seongsu"},
+    {title:"Amore Seongsu", note:"Experiential beauty space", place:"Amore Seongsu"},
+    {title:"Cafe Onion Seongsu", note:"", place:"Cafe Onion Seongsu"},
+  ]},
+  { day:3, date:"2026-06-09", weekday:"Tuesday", city:"Seoul → Busan", citytag:"→ Busan", theme:"Travel day", items:[
+    {t:"10:00", time:"10:00 AM", title:"Check out · Ramada Namdaemun", note:""},
+    {t:"10:58", time:"10:58 AM", title:"KTX → Busan", note:"Board at Seoul Station", place:"Seoul Station"},
+    {t:"13:42", time:"01:42 PM", title:"Arrive · Busan Station", note:"", place:"Busan Station"},
+    {t:"14:00", time:"After arrival", title:"Drop luggage at Airbnb", note:"Check-in after 5 PM"},
+    {t:"15:30", time:"Afternoon", title:"ZM-ILLENNIAL café", note:"Owned by Jimin's dad", place:"Magnate Coffee Busan"},
+    {t:"17:00", time:"05:00 PM", title:"Gwangalli Beach", note:"Sunset + Diamond Bridge", place:"Gwangalli Beach"},
+  ]},
+  { day:4, date:"2026-06-10", weekday:"Wednesday", city:"Busan", theme:"Coast & markets", items:[
+    {t:"11:00", time:"11:00 AM", title:"Cheongsapo Daritdol Observatory", note:"", place:"Cheongsapo Daritdol Observatory"},
+    {t:"12:30", time:"12:30 PM", title:"Sky Capsule · Cheongsapo", note:"Pastel coastal capsule ride", place:"Sky Capsule Cheongsapo Station"},
+    {title:"Jagalchi Market", note:"Korea's largest seafood market", place:"Jagalchi Market"},
+    {title:"BIFF Square", note:"Film & entertainment district", place:"BIFF Square Busan"},
+    {title:"Gukje Market", note:"Historic traditional market", place:"Gukje Market Busan"},
+  ]},
+  { day:5, date:"2026-06-11", weekday:"Thursday", city:"Busan", theme:"Stadium & anniversary", items:[
+    {t:"08:30", time:"08:30 AM", title:"Travel to Busan Asiad Stadium", note:"", place:"Busan Asiad Main Stadium"},
+    {t:"09:00", time:"09:00 AM", title:"Buy concert merch", note:"At the stadium", place:"Busan Asiad Main Stadium"},
+    {t:"12:00", time:"12:00 PM", title:"Anniversary lunch · Palate", note:"1 Michelin star", place:"Palate Busan restaurant", badge:"heart", badgetext:"♥ Anniversary"},
+    {t:"15:00", time:"Afternoon", title:"Gamcheon Culture Village", note:"Colorful hillside art village", place:"Gamcheon Culture Village"},
+  ]},
+  { day:6, date:"2026-06-12", weekday:"Friday", city:"Busan", theme:"Free day", items:[], free:true },
+  { day:7, date:"2026-06-13", weekday:"Saturday", city:"Busan", theme:"Concert Day", concert:true, items:[
+    {t:"11:00", time:"11:00 AM", title:"Check out → Asti Hotel", note:"Leave luggages at Busan Station hotel", place:"Asti Hotel Busan Station"},
+    {t:"12:00", time:"12:00 PM", title:"NOL World shuttle → stadium", note:"To Busan Asiad Stadium", place:"Busan Asiad Main Stadium"},
+    {t:"13:00", time:"01:00 PM", title:"Arrive at the stadium", note:"", place:"Busan Asiad Main Stadium"},
+    {t:"19:00", time:"07:00 PM", title:"BTS Concert", note:"Busan Asiad Stadium", place:"Busan Asiad Main Stadium", badge:"star", badgetext:"★ THE night"},
+    {t:"22:30", time:"After", title:"Return via NOL World shuttle", note:"Back to Busan Station"},
+  ]},
+  { day:8, date:"2026-06-14", weekday:"Sunday", city:"Busan → Manila", citytag:"→ Manila", theme:"Departure", items:[
+    {t:"11:00", time:"11:00 AM", title:"Check out · walk to Busan Station", note:"", place:"Busan Station"},
+    {t:"12:00", time:"12:00 PM", title:"KTX → Seoul", note:"Depart Busan Station", place:"Busan Station"},
+    {t:"15:00", time:"03:00 PM", title:"Arrive · Seoul Station", note:"", place:"Seoul Station"},
+    {t:"16:00", time:"04:00 PM", title:"AREX → Incheon T1", note:"Express train to airport", place:"Incheon Airport Terminal 1"},
+    {t:"17:00", time:"05:00 PM", title:"Arrive · Incheon T1", note:"", place:"Incheon Airport Terminal 1"},
+    {t:"20:30", time:"08:30 PM", title:"Flight departs for Manila", note:"안녕 Korea 🇰🇷"},
+  ]},
+];
+
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const TRIP_START=new Date(2026,5,7);
+const CONCERT=new Date(2026,5,13,19,0,0);
+
+/* ---------------- Persistence (window.storage w/ fallback) ---------------- */
+let checks={};
+const STORE_KEY="korea2026:checks";
+// Saves straight to the device (localStorage). Works fully offline once the
+// page is open. Falls back to in-memory if storage is blocked (e.g. preview
+// sandbox or Safari private mode) so the app never breaks.
+function loadChecks(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(raw) checks=JSON.parse(raw);
+  }catch(e){ checks={}; }
+}
+function saveChecks(){
+  try{
+    localStorage.setItem(STORE_KEY, JSON.stringify(checks));
+  }catch(e){ /* in-memory only */ }
+}
+
+/* ---------------- Helpers ---------------- */
+function todayDayIndex(){
+  const now=new Date();
+  const t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const diff=Math.floor((t-TRIP_START)/86400000);
+  return Math.min(8,Math.max(1,diff+1));
+}
+function itemId(dayNum,idx){return "d"+dayNum+"-i"+idx;}
+function realItems(day){ // indices of non-section items
+  return day.items.map((it,i)=>({it,i})).filter(x=>!x.it.section);
+}
+function fmtClock(d){
+  let h=d.getHours(),m=d.getMinutes();
+  const ap=h>=12?"PM":"AM";h=h%12||12;
+  return h+":"+String(m).padStart(2,"0")+" "+ap;
+}
+
+let selectedDay=todayDayIndex();
+const TODAY=todayDayIndex();
+
+/* ---------------- Render: header / hero ---------------- */
+function pinSVG(){return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';}
+function checkSVG(){return '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2"><polyline points="20 6 9 17 4 12"/></svg>';}
+
+function renderHeaderMeta(){
+  const d=TRIP[TODAY-1];
+  const dd=new Date(d.date);
+  document.getElementById("hcity").textContent=d.city;
+  document.getElementById("hdayinfo").textContent="Day "+TODAY+" of 8";
+  document.getElementById("hdate").textContent=dd.getDate()+" "+MONTHS[dd.getMonth()];
+}
+
+function renderHero(){
+  const d=TRIP[TODAY-1];
+  const dd=new Date(d.date);
+  const ri=realItems(d);
+  const done=ri.filter(x=>checks[itemId(d.day,x.i)]).length;
+  const total=ri.length;
+  const pct=total?Math.round(done/total*100):0;
+
+  // next-up among timed items today
+  const now=new Date();
+  const mins=now.getHours()*60+now.getMinutes();
+  let nextItem=null;
+  for(const x of ri){
+    if(x.it.t){
+      const[h,m]=x.it.t.split(":").map(Number);
+      if(h*60+m>=mins && !checks[itemId(d.day,x.i)]){nextItem=x.it;break;}
+    }
+  }
+  let nextHtml="";
+  if(d.free){
+    nextHtml=`<div class="next"><span class="tag">FREE</span><div class="ntxt"><b>Open day — explore Busan</b><span>Nothing scheduled. Wander.</span></div></div>`;
+  } else if(nextItem){
+    nextHtml=`<div class="next"><span class="tag">NEXT</span><div class="ntxt"><b>${nextItem.title}</b><span>${nextItem.time||""}${nextItem.note?" · "+nextItem.note:""}</span></div></div>`;
+  } else if(total && done===total){
+    nextHtml=`<div class="next"><span class="tag done">DONE</span><div class="ntxt"><b>All wrapped for today</b><span>Nice. Rest up.</span></div></div>`;
+  } else {
+    nextHtml=`<div class="next"><span class="tag">TODAY</span><div class="ntxt"><b>${d.theme}</b><span>${d.city}</span></div></div>`;
+  }
+
+  document.getElementById("hero").innerHTML=`
+    <div class="eyebrow">Today · Day ${TODAY}</div>
+    <h1>${d.weekday}, ${dd.getDate()} ${MONTHS[dd.getMonth()]}</h1>
+    <div class="sub">${d.theme} — ${d.city}</div>
+    ${nextHtml}
+    ${total?`<div class="prog"><div class="bar"><div class="fill" style="width:${pct}%"></div></div><div class="lbl">${done} of ${total} done · ${pct}%</div></div>`:""}
+  `;
+}
+
+function renderConcert(){
+  const now=new Date();
+  const diff=CONCERT-now;
+  const el=document.getElementById("concert");
+  if(diff<=0){
+    const past=now-CONCERT;
+    if(past < 6*3600000){
+      el.innerHTML=`<span class="star">★</span><div class="cinfo"><div class="k">Right now</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">LIVE</div><div class="small">enjoy it</div></div>`;
+    } else {
+      el.innerHTML=`<span class="star">★</span><div class="cinfo"><div class="k">The concert</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">♥</div><div class="small">done & dusted</div></div>`;
+    }
+    return;
+  }
+  const days=Math.floor(diff/86400000);
+  const hrs=Math.floor((diff%86400000)/3600000);
+  const mins=Math.floor((diff%3600000)/60000);
+  let big,small;
+  if(days>=1){big="D-"+days;small=hrs+"h "+mins+"m to go";}
+  else{big=String(hrs).padStart(2,"0")+":"+String(mins).padStart(2,"0");small="hours to showtime";}
+  el.innerHTML=`<span class="star">★</span><div class="cinfo"><div class="k">Countdown to</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">${big}</div><div class="small">${small}</div></div>`;
+}
+
+/* ---------------- Render: day tabs ---------------- */
+function renderDays(){
+  const nav=document.getElementById("days");
+  nav.innerHTML="";
+  TRIP.forEach(d=>{
+    const dd=new Date(d.date);
+    const b=document.createElement("button");
+    b.className="daybtn"+(d.day===selectedDay?" active":"")+(d.day===TODAY?" today":"");
+    b.innerHTML=`<div class="d">${["SUN","MON","TUE","WED","THU","FRI","SAT"][dd.getDay()]}</div><div class="n">${dd.getDate()}</div>`;
+    b.onclick=()=>{selectedDay=d.day;renderDays();renderMain();window.scrollTo({top:document.getElementById("days").offsetTop-70,behavior:"smooth"});};
+    nav.appendChild(b);
+  });
+  // scroll active into view
+  const act=nav.querySelector(".active");
+  if(act) act.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"});
+}
+
+/* ---------------- Render: main list ---------------- */
+function renderMain(){
+  const d=TRIP[selectedDay-1];
+  const dd=new Date(d.date);
+  const now=new Date();
+  const mins=now.getHours()*60+now.getMinutes();
+  const isToday=d.day===TODAY;
+
+  // find next-up index for today
+  let nextIdx=-1;
+  if(isToday && !d.free){
+    for(const x of realItems(d)){
+      if(x.it.t){
+        const[h,m]=x.it.t.split(":").map(Number);
+        if(h*60+m>=mins && !checks[itemId(d.day,x.i)]){nextIdx=x.i;break;}
+      }
+    }
+  }
+
+  let html=`<div class="dayhead" id="day${d.day}">
+    <div class="l"><div class="kicker">Day ${d.day}${isToday?" · Today":""}</div>
+      <h2>${d.weekday}</h2><div class="theme">${d.theme}</div></div>
+    <div class="r"><span class="city">${pinHtmlInline()}${d.city}</span><br><span style="display:inline-block;margin-top:6px">${dd.getDate()} ${MONTHS[dd.getMonth()]}</span></div>
+  </div>`;
+
+  if(d.free){
+    html+=`<div class="free"><div class="big">No plans today</div>An open day in Busan — sleep in, find a café, follow the coast wherever.</div>`;
+    document.getElementById("main").innerHTML=html;
+    return;
+  }
+
+  html+="<ul class='list'>";
+  d.items.forEach((it,i)=>{
+    if(it.section){html+=`<li class="section-h">${it.section}</li>`;return;}
+    const id=itemId(d.day,i);
+    const on=!!checks[id];
+    const nu=(i===nextIdx);
+    const badge=it.badge?`<span class="badge ${it.badge}">${it.badgetext}</span>`:"";
+    const nextBadge=nu?`<span class="badge next">NEXT</span>`:"";
+    const timeLine=it.time?`<div class="time">${it.time}</div>`:"";
+    const pin=it.place?`<a class="pin" target="_blank" rel="noopener" href="https://maps.google.com/?q=${encodeURIComponent(it.place)}" onclick="event.stopPropagation()">${pinSVG()}</a>`:"";
+    html+=`<li class="item${on?" checked":""}${nu?" next-up":""}" id="li-${id}">
+      <div class="cbox" data-id="${id}" data-day="${d.day}">${checkSVG()}</div>
+      <div class="ibody" data-id="${id}" data-day="${d.day}">
+        ${timeLine}
+        <div class="title">${it.title}${badge}${nextBadge}</div>
+        ${it.note?`<div class="note">${it.note}</div>`:""}
+      </div>
+      ${pin}
+    </li>`;
+  });
+  html+="</ul>";
+  document.getElementById("main").innerHTML=html;
+
+  document.querySelectorAll(".cbox,.ibody").forEach(el=>{
+    el.addEventListener("click",e=>{
+      const id=el.getAttribute("data-id");
+      toggle(id);
+    });
+  });
+}
+
+function pinHtmlInline(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';}
+
+function toggle(id){
+  checks[id]=!checks[id];
+  const li=document.getElementById("li-"+id);
+  if(li){
+    li.classList.toggle("checked",checks[id]);
+    if(checks[id]){li.classList.add("justchecked");setTimeout(()=>li.classList.remove("justchecked"),260);}
+  }
+  saveChecks();
+  renderHero(); // update progress + next
+  renderMain(); // refresh next-up highlight
+}
+
+/* ---------------- Tick ---------------- */
+function tick(){
+  document.getElementById("clock").textContent=fmtClock(new Date());
+  renderConcert();
+}
+
+/* ---------------- Init ---------------- */
+(async function init(){
+  await loadChecks();
+  renderHeaderMeta();
+  renderHero();
+  renderConcert();
+  renderDays();
+  renderMain();
+  tick();
+  setInterval(tick,1000);
+  // refresh hero "next" every 30s
+  setInterval(()=>{renderHero();if(selectedDay===TODAY)renderMain();},30000);
+
+  document.getElementById("reset").addEventListener("click",async()=>{
+    if(confirm("Clear every check-off across all 8 days?")){
+      checks={};await saveChecks();renderHero();renderMain();
+    }
+  });
+})();
+</script>
+</body>
+</html>

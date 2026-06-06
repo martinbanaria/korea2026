@@ -212,7 +212,8 @@
 
   <footer>
     Annyeong · 안녕 — have the best trip ♥
-    <br><button class="reset" id="reset">reset all check-offs</button>
+    <div id="syncline" style="margin-top:9px;font-size:11px;color:var(--ink-faint)"></div>
+    <button class="reset" id="reset">reset all check-offs</button>
   </footer>
 </div>
 
@@ -307,6 +308,98 @@ function saveChecks(){
   try{
     localStorage.setItem(STORE_KEY, JSON.stringify({v:STORE_VERSION, checks}));
   }catch(e){ /* in-memory only */ }
+}
+
+/* ---------------- Shared cloud sync (optional, graceful) ---------------- */
+// localStorage is the instant offline cache; when a backing store is configured
+// (/api/checks → Redis) every device shares the same progress. If the API is
+// missing (503) or unreachable, the app silently stays in local-only mode.
+const API_URL="/api/checks";
+let remoteEnabled=false;       // true after the first successful server response
+const pending=new Set();       // ids with an in-flight write — polls must not clobber
+let pollTimer=null;
+
+function canon(o){return JSON.stringify(Object.keys(o).filter(k=>o[k]).sort());}
+
+function setSync(state){
+  const el=document.getElementById("syncline");
+  if(!el) return;
+  const map={
+    local:["On this device","var(--ink-faint)"],
+    syncing:["Syncing…","var(--sea)"],
+    synced:["Synced across devices","var(--ok)"],
+    offline:["Offline · saved locally","var(--accent)"],
+  };
+  const [txt,col]=map[state]||map.local;
+  el.innerHTML=`<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:${col};display:inline-block"></span>${txt}</span>`;
+}
+
+function applyRemote(data){
+  const server=(data&&data.checks)||{};
+  const merged={};
+  for(const k of Object.keys(server)) if(server[k]) merged[k]=true;
+  for(const id of pending) if(checks[id]) merged[id]=true; // protect in-flight toggles
+  if(canon(merged)===canon(checks)) return;                // nothing changed → no churn
+  checks=merged;
+  saveChecks();
+  renderHero();
+  renderMain();
+}
+
+async function remotePull(){
+  try{
+    const r=await fetch(API_URL,{headers:{Accept:"application/json"}});
+    if(r.status===503){ remoteEnabled=false; setSync("local"); return; }
+    if(!r.ok) throw new Error(r.status);
+    applyRemote(await r.json());
+    remoteEnabled=true; setSync("synced");
+  }catch(e){ setSync(remoteEnabled?"offline":"local"); }
+}
+
+async function remotePush(id,value){
+  if(!remoteEnabled) return;
+  pending.add(id); setSync("syncing");
+  try{
+    const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({id,value})});
+    if(!r.ok) throw new Error(r.status);
+    const data=await r.json();
+    pending.delete(id);
+    applyRemote(data);
+    setSync("synced");
+  }catch(e){ pending.delete(id); setSync("offline"); }
+}
+
+function startPolling(){
+  if(pollTimer) return;
+  pollTimer=setInterval(()=>{ if(remoteEnabled) remotePull(); },12000);
+}
+
+async function initRemote(){
+  // Union any local (possibly offline-made) check-offs into the shared store,
+  // then adopt the merged result as the source of truth.
+  setSync("syncing");
+  try{
+    const hasLocal=Object.keys(checks).some(k=>checks[k]);
+    const opts=hasLocal
+      ? {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({checks})}
+      : {headers:{Accept:"application/json"}};
+    const r=await fetch(API_URL,opts);
+    if(r.status===503){ remoteEnabled=false; setSync("local"); return; }
+    if(!r.ok) throw new Error(r.status);
+    remoteEnabled=true;
+    applyRemote(await r.json());
+    setSync("synced");
+    startPolling();
+    // Pull fresh state when returning to the tab.
+    document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&remoteEnabled) remotePull(); });
+  }catch(e){ remoteEnabled=false; setSync("local"); }
+}
+
+async function remoteReset(){
+  if(!remoteEnabled) return;
+  try{ await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reset:true})}); }
+  catch(e){ /* local reset still applied */ }
 }
 
 /* ---------------- Helpers ---------------- */
@@ -483,13 +576,15 @@ function renderMain(){
 function pinHtmlInline(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';}
 
 function toggle(id){
-  checks[id]=!checks[id];
+  const now=!checks[id];
+  if(now) checks[id]=true; else delete checks[id];
   const li=document.getElementById("li-"+id);
   if(li){
-    li.classList.toggle("checked",checks[id]);
-    if(checks[id]){li.classList.add("justchecked");setTimeout(()=>li.classList.remove("justchecked"),260);}
+    li.classList.toggle("checked",now);
+    if(now){li.classList.add("justchecked");setTimeout(()=>li.classList.remove("justchecked"),260);}
   }
   saveChecks();
+  remotePush(id,now); // sync to other devices (no-op in local-only mode)
   renderHero(); // update progress + next
   renderMain(); // refresh next-up highlight
 }
@@ -513,9 +608,11 @@ function tick(){
   // refresh hero "next" every 30s
   setInterval(()=>{renderHero();if(selectedDay===TODAY)renderMain();},30000);
 
+  initRemote(); // kick off shared sync (falls back to local-only silently)
+
   document.getElementById("reset").addEventListener("click",async()=>{
     if(confirm("Clear every check-off across all 8 days?")){
-      checks={};await saveChecks();renderHero();renderMain();
+      checks={};saveChecks();remoteReset();renderHero();renderMain();
     }
   });
 })();

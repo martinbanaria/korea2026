@@ -13,20 +13,38 @@ A single-file, mobile-first trip itinerary app for an 8-day Seoul → Busan trip
 - **Google Maps deep links** on every location
 - **Stays** summary (Seoul + Busan hotels / Airbnb)
 
-It's a static `index.html` — no build step, no dependencies, works offline once
-loaded.
+It's a static `index.html` plus one serverless function (`api/checks.js`) for
+shared sync — no build step, no npm dependencies, and it still works offline.
 
-## Storage
+## Storage — shared across devices
 
-Check-offs are saved to the browser's `localStorage` under the key
-`korea2026:checks`, wrapped in a versioned envelope (`{ v: 1, checks: {…} }`)
-so the data survives reloads, relaunches, and offline use. If storage is
-blocked (private mode / sandboxed preview), the app falls back to in-memory
-state so it never breaks.
+Check-offs sync across every device viewing the site, so both phones see the
+same progress in near real-time.
 
-> Persistence is **per-device / per-browser**. To sync check-offs across two
-> phones you'd need a small backend (e.g. Vercel KV + a serverless route) —
-> happy to add that as a follow-up if you want shared state.
+- **Backend:** a serverless function at [`api/checks.js`](api/checks.js) reads
+  and writes a single shared map in Redis over its REST API.
+- **Frontend:** `localStorage` (key `korea2026:checks`, versioned envelope
+  `{ v: 1, checks: {…} }`) stays as the instant offline cache. On load the app
+  unions local state into the store, then polls every 12s (and on tab focus)
+  for the other device's changes. A status line in the footer shows
+  *Synced across devices* / *Offline · saved locally* / *On this device*.
+- **Graceful fallback:** if the store isn't configured (`/api/checks` returns
+  `503`) or the network is down, the app silently runs local-only and nothing
+  breaks.
+
+### Provisioning the store (one-time)
+
+The function accepts either Vercel KV **or** Upstash Redis env vars:
+
+| Vercel KV          | Upstash Redis              |
+| ------------------ | -------------------------- |
+| `KV_REST_API_URL`  | `UPSTASH_REDIS_REST_URL`   |
+| `KV_REST_API_TOKEN`| `UPSTASH_REDIS_REST_TOKEN` |
+
+In the Vercel dashboard: **Project → Storage → Create / Connect** a Redis
+(Upstash) store and attach it to the project. Vercel injects the env vars
+automatically; redeploy and sync turns on. Until then the app stays in
+local-only mode.
 
 ## Run locally
 

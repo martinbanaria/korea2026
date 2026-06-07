@@ -57,10 +57,21 @@
   .brand{display:flex;align-items:baseline;gap:8px;}
   .brand .ttl{font-family:"Fraunces",serif;font-weight:600;font-size:21px;letter-spacing:-.01em;}
   .brand .ttl em{font-style:italic;color:var(--accent);}
+  .hright{display:flex;align-items:center;gap:10px;}
   .clock{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.02em;}
+  .iconbtn{border:1px solid var(--line);background:var(--card);border-radius:11px;width:38px;height:34px;display:flex;
+    align-items:center;justify-content:center;cursor:pointer;transition:.16s;padding:0;color:var(--ink-soft);}
+  .iconbtn:active{transform:scale(.93);}
+  .iconbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;}
+  .iconbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;}
   .meta{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:12.5px;color:var(--ink-soft);}
   .dot{width:4px;height:4px;border-radius:50%;background:var(--ink-faint);}
   .city-pill{font-weight:600;color:var(--ink);}
+
+  /* edit-mode banner */
+  .editbanner{margin:12px -18px 0;padding:9px 18px;background:var(--accent);color:#fff;font-size:12.5px;font-weight:600;
+    display:flex;align-items:center;gap:8px;}
+  .editbanner svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;}
 
   /* ---- hero / today ---- */
   .hero{
@@ -111,6 +122,8 @@
   .daybtn.active .n{color:#fff;}
   .daybtn.today::after{content:"";display:block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin:3px auto 0;}
   .daybtn.active.today::after{background:#fff;}
+  .daybtn.adddaybtn{display:flex;align-items:center;justify-content:center;min-width:48px;color:var(--ink-faint);
+    border-style:dashed;font-size:22px;font-weight:400;}
 
   /* ---- day header ---- */
   .dayhead{margin-top:18px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;}
@@ -120,10 +133,12 @@
   .dayhead .r{text-align:right;font-size:12px;color:var(--ink-soft);font-weight:500;white-space:nowrap;}
   .dayhead .r .city{display:inline-flex;align-items:center;gap:5px;background:var(--paper-grain);border:1px solid var(--line);
     border-radius:99px;padding:4px 10px;font-weight:600;color:var(--ink);}
+  .editdaybtn{margin-top:8px;font-size:11.5px;color:var(--sea);background:none;border:1px solid var(--line);
+    border-radius:9px;padding:5px 9px;cursor:pointer;font-weight:600;}
 
   /* ---- list ---- */
   ul.list{list-style:none;margin:14px 0 0;padding:0;}
-  .section-h{font-family:"Fraunces",serif;font-style:italic;font-size:15px;color:var(--accent-deep);margin:16px 2px 8px;font-weight:500;}
+  .section-h{font-family:"Fraunces",serif;font-style:italic;font-size:15px;color:var(--accent-deep);margin:16px 2px 8px;font-weight:500;display:flex;align-items:center;gap:8px;}
   li.item{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--line);
     border-radius:15px;padding:13px 14px;margin-bottom:9px;box-shadow:var(--shadow);transition:.2s;position:relative;}
   li.item.checked{background:var(--paper-grain);box-shadow:none;border-color:transparent;}
@@ -147,9 +162,60 @@
   .pin{flex:0 0 auto;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--paper-grain);
     display:flex;align-items:center;justify-content:center;text-decoration:none;margin-top:0;transition:.15s;}
   .pin:active{transform:scale(.92);}
-  .pin svg{width:16px;height:16px;stroke:var(--sea);}
+  .pin svg{width:16px;height:16px;stroke:#03C75A;}
   .free{text-align:center;padding:34px 20px;color:var(--ink-soft);background:var(--card);border:1px dashed var(--line);border-radius:15px;}
   .free .big{font-family:"Fraunces",serif;font-style:italic;font-size:19px;color:var(--ink);margin-bottom:4px;}
+
+  /* edit controls on items */
+  .itools{flex:0 0 auto;display:flex;flex-direction:column;gap:5px;}
+  .tbtn{width:30px;height:26px;border:1px solid var(--line);background:var(--paper-grain);border-radius:8px;display:flex;
+    align-items:center;justify-content:center;cursor:pointer;color:var(--ink-soft);padding:0;}
+  .tbtn:active{transform:scale(.9);}
+  .tbtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+  .tbtn.del{color:var(--accent);}
+  .moverow{display:flex;gap:5px;}
+  li.item.editing{cursor:pointer;border-style:dashed;}
+  .addbtn{width:100%;border:1px dashed var(--line);background:var(--card);border-radius:13px;padding:12px;
+    color:var(--sea);font-weight:600;font-size:13.5px;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .addbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;}
+  .addbtn:active{transform:scale(.99);}
+
+  /* ---- AI suggestions ---- */
+  .sugg{margin-top:18px;background:linear-gradient(135deg,#fffdf8,#f7f1e4);border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+  .sugg-head{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;}
+  .sugg-head .spark{font-size:17px;}
+  .sugg-head .st{flex:1;}
+  .sugg-head .st b{font-family:"Fraunces",serif;font-weight:600;font-size:15.5px;display:block;}
+  .sugg-head .st span{font-size:12px;color:var(--ink-soft);}
+  .sugg-head .chev{transition:.25s;color:var(--ink-faint);}
+  .sugg-head .chev svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;}
+  .sugg.open .chev{transform:rotate(180deg);}
+  .sugg-list{display:none;padding:0 16px 14px;}
+  .sugg.open .sugg-list{display:block;}
+  .sugg-item{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-top:1px solid var(--line);}
+  .sugg-item .si{flex:1;min-width:0;}
+  .sugg-item .si .t{font-size:14px;font-weight:600;}
+  .sugg-item .si .n{font-size:12.5px;color:var(--ink-soft);margin-top:1px;}
+  .sugg-add{flex:0 0 auto;width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:var(--card);
+    color:var(--ok);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
+  .sugg-add svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;}
+  .sugg-add.added{background:var(--ok);color:#fff;border-color:var(--ok);}
+  .sugg-add:active{transform:scale(.9);}
+
+  /* ---- photos ---- */
+  .photos{margin-top:18px;}
+  .photos h4{font-family:"Fraunces",serif;font-weight:600;font-size:14.5px;margin:0 0 9px;display:flex;align-items:center;gap:8px;color:var(--ink);}
+  .photos h4 .cnt{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);font-weight:700;}
+  .pstrip{display:flex;gap:9px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .pstrip::-webkit-scrollbar{display:none;}
+  .thumb{flex:0 0 auto;width:84px;height:84px;border-radius:13px;object-fit:cover;border:1px solid var(--line);cursor:pointer;background:var(--paper-grain);}
+  .addphoto{flex:0 0 auto;width:84px;height:84px;border-radius:13px;border:1px dashed var(--line);background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--sea);}
+  .addphoto svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;}
+  .addphoto span{font-size:10px;font-weight:700;letter-spacing:.02em;}
+  .addphoto:active{transform:scale(.96);}
+  .pnote{font-size:11px;color:var(--ink-faint);margin-top:6px;}
 
   /* ---- stays card ---- */
   .stays{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 17px;box-shadow:var(--shadow);}
@@ -166,6 +232,44 @@
   footer .reset{margin-top:8px;font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);background:none;border:none;text-decoration:underline;cursor:pointer;}
   @keyframes pop{0%{transform:scale(1);}40%{transform:scale(.94);}100%{transform:scale(1);}}
   li.item.justchecked{animation:pop .25s ease;}
+
+  /* ---- bottom-sheet editor ---- */
+  .sheet-wrap{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;justify-content:center;}
+  .sheet-wrap[hidden]{display:none;}
+  .sheet-bg{position:absolute;inset:0;background:rgba(35,30,20,.42);backdrop-filter:blur(2px);}
+  .sheet{position:relative;width:100%;max-width:520px;background:var(--paper);border-radius:22px 22px 0 0;
+    padding:8px 18px calc(env(safe-area-inset-bottom) + 18px);max-height:90vh;overflow-y:auto;
+    box-shadow:0 -10px 40px rgba(40,30,15,.22);animation:slideup .26s cubic-bezier(.4,0,.2,1);}
+  @keyframes slideup{from{transform:translateY(100%);}to{transform:translateY(0);}}
+  .grab{width:40px;height:4px;border-radius:99px;background:var(--line);margin:6px auto 12px;}
+  .sheet h3{font-family:"Fraunces",serif;font-weight:600;font-size:20px;margin:0 0 14px;}
+  .field{margin-bottom:13px;}
+  .field label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px;}
+  .field input[type=text],.field input[type=date],.field textarea,.field select{
+    width:100%;font-family:inherit;font-size:16px;color:var(--ink);background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;transition:.15s;}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);}
+  .field textarea{resize:vertical;min-height:54px;}
+  .frow{display:flex;gap:11px;}
+  .frow .field{flex:1;}
+  .checkrow{display:flex;align-items:center;gap:9px;margin-bottom:13px;font-size:14px;font-weight:600;color:var(--ink);}
+  .checkrow input{width:20px;height:20px;accent-color:var(--accent);}
+  .btnrow{display:flex;gap:10px;margin-top:8px;}
+  .btn{flex:1;border:none;border-radius:13px;padding:14px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:.15s;}
+  .btn:active{transform:scale(.98);}
+  .btn.primary{background:var(--accent);color:#fff;}
+  .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink-soft);}
+  .btn.danger{background:#FBE9E4;color:var(--accent-deep);flex:0 0 auto;width:54px;}
+  .hint{font-size:11.5px;color:var(--ink-faint);margin:-6px 0 12px;}
+
+  /* photo viewer */
+  .viewer{position:fixed;inset:0;z-index:250;background:rgba(20,16,10,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);}
+  .viewer[hidden]{display:none;}
+  .viewer img{max-width:100%;max-height:78vh;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  .viewer .vbar{display:flex;gap:12px;margin-top:18px;}
+  .viewer .vbtn{border:none;border-radius:12px;padding:12px 20px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+  .viewer .vbtn.close{background:rgba(255,255,255,.16);color:#fff;}
+  .viewer .vbtn.del{background:var(--accent);color:#fff;}
 </style>
 </head>
 <body>
@@ -173,7 +277,12 @@
   <header>
     <div class="hbar">
       <div class="brand"><span class="ttl">Korea <em>'26</em></span></div>
-      <span class="clock" id="clock">—:—</span>
+      <div class="hright">
+        <span class="clock" id="clock">—:—</span>
+        <button class="iconbtn" id="editBtn" title="Edit itinerary" aria-label="Edit itinerary">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        </button>
+      </div>
     </div>
     <div class="meta">
       <span class="city-pill" id="hcity">Seoul</span>
@@ -184,8 +293,13 @@
     </div>
   </header>
 
+  <div class="editbanner" id="editBanner" style="display:none">
+    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+    Editing — tap any item to change it, drag the arrows to reorder.
+  </div>
+
   <section class="hero" id="hero"></section>
-  <a class="concert" id="concert" href="#day7" style="text-decoration:none;color:#fff"></a>
+  <a class="concert" id="concert" href="#" style="text-decoration:none;color:#fff"></a>
 
   <nav class="days" id="days"></nav>
 
@@ -196,17 +310,17 @@
     <div class="stay">
       <span class="where">SEOUL<br>D1–D2</span>
       <div><div class="nm">Ramada Hotel &amp; Suites Namdaemun</div><div class="sub">Check-in 3 PM · Check-out D3 10 AM</div></div>
-      <a class="pin" target="_blank" href="https://maps.google.com/?q=Ramada+Hotel+Suites+Namdaemun+Seoul"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+      <a class="pin stay-pin" target="_blank" rel="noopener" data-place="Ramada Hotel Suites Namdaemun Seoul"></a>
     </div>
     <div class="stay">
       <span class="where">BUSAN<br>D3–D6</span>
       <div><div class="nm">Airbnb · Busan</div><div class="sub">Check-in after 5 PM · Check-out D7 11 AM</div></div>
-      <a class="pin" target="_blank" href="https://maps.google.com/?q=Busan+Station"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+      <a class="pin stay-pin" target="_blank" rel="noopener" data-place="Busan Station"></a>
     </div>
     <div class="stay">
       <span class="where">BUSAN<br>D7</span>
       <div><div class="nm">Asti Hotel · Busan Station</div><div class="sub">Concert night · last stop before flight</div></div>
-      <a class="pin" target="_blank" href="https://maps.google.com/?q=Asti+Hotel+Busan+Station"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>
+      <a class="pin stay-pin" target="_blank" rel="noopener" data-place="Asti Hotel Busan Station"></a>
     </div>
   </section>
 
@@ -217,9 +331,14 @@
   </footer>
 </div>
 
+<div class="sheet-wrap" id="sheet" hidden><div class="sheet-bg" id="sheetBg"></div><div class="sheet" id="sheetBody"></div></div>
+<div class="viewer" id="viewer" hidden></div>
+
 <script>
-/* ---------------- Itinerary data ---------------- */
-const TRIP = [
+/* ================= Default itinerary (seed data) ================= */
+/* Each item gets a stable id ("d{day}-i{index}") so check-offs and ordering
+   survive edits. User edits are saved to localStorage; this is just the seed. */
+const DEFAULT_TRIP = [
   { day:1, date:"2026-06-07", weekday:"Sunday", city:"Seoul", theme:"Arrival & Hongdae", items:[
     {t:"06:00", time:"06:00 AM", title:"Arrive · Incheon Int'l Airport", note:"Take the AREX to Seoul Station", place:"Incheon International Airport"},
     {t:"08:00", time:"08:00 AM", title:"Drop bags · Ramada Namdaemun", note:"Bag drop before check-in", place:"Ramada Hotel Suites Namdaemun Seoul"},
@@ -280,104 +399,136 @@ const TRIP = [
   ]},
 ];
 
+/* ================= Curated "AI" suggestions per day ================= */
+/* Static, hand-curated picks (a live model call would leak an API key on a
+   public static site). Each can be added straight into the day with one tap. */
+const SUGGESTIONS = {
+  1:[
+    {title:"Gyeongbokgung Palace", note:"Free entry in hanbok · grand Joseon palace", place:"Gyeongbokgung Palace"},
+    {title:"Bukchon Hanok Village", note:"Traditional alleys between two palaces", place:"Bukchon Hanok Village"},
+    {title:"Gwangjang Market", note:"Legendary street-food hall · bindaetteok", place:"Gwangjang Market Seoul"},
+    {title:"Ssamzigil · Insadong", note:"Spiral craft mall, tea & souvenirs", place:"Ssamzigil Insadong"},
+  ],
+  2:[
+    {title:"Myeongdong night market", note:"Tornado potato, egg bread, lobster cheese", place:"Myeongdong Street Food"},
+    {title:"Olive Young flagship", note:"K-beauty haul HQ", place:"Olive Young Myeongdong Flagship"},
+    {title:"Starfield COEX Library", note:"The giant book wall for photos", place:"Starfield Library COEX"},
+    {title:"Common Ground", note:"Blue container concept mall", place:"Common Ground Konkuk"},
+  ],
+  3:[
+    {title:"Haeundae Beach", note:"Busan's marquee beach · evening stroll", place:"Haeundae Beach"},
+    {title:"The Bay 101", note:"Skyline reflections after dark", place:"The Bay 101 Busan"},
+    {title:"Millak Waterside Park", note:"Locals eat takeout by the sea", place:"Millak Waterside Park Busan"},
+  ],
+  4:[
+    {title:"Haedong Yonggungsa", note:"Seaside temple — stunning at sunrise", place:"Haedong Yonggungsa Temple"},
+    {title:"Huinnyeoul Culture Village", note:"Cliffside 'Santorini of Busan'", place:"Huinnyeoul Culture Village"},
+    {title:"Songdo Cable Car", note:"Glass-floor ride over the bay", place:"Busan Air Cruise Songdo Cable Car"},
+    {title:"Busan Tower · Yongdusan", note:"360° city + harbor views", place:"Busan Tower Yongdusan Park"},
+  ],
+  5:[
+    {title:"Igidae Coastal Walk", note:"Cliff trail facing Gwangan Bridge", place:"Igidae Coastal Walk"},
+    {title:"Shinsegae Centum City", note:"World's largest department store + Spa Land", place:"Shinsegae Centum City"},
+    {title:"Busan Cinema Center", note:"BIFF's glowing LED-roof landmark", place:"Busan Cinema Center"},
+  ],
+  6:[
+    {title:"Oryukdo Skywalk", note:"Glass ledge over the open sea", place:"Oryukdo Skywalk"},
+    {title:"Taejongdae Park", note:"Cliffs, lighthouse, danubi train", place:"Taejongdae Resort Park"},
+    {title:"Jeonpo Cafe Street", note:"Hip cafés & roasters", place:"Jeonpo Cafe Street"},
+    {title:"Songjeong Beach", note:"Mellow surf town vibe", place:"Songjeong Beach Busan"},
+  ],
+  7:[
+    {title:"Light meal near Sajik", note:"Eat early & hydrate before the show", place:"Sajik-dong Busan restaurants"},
+    {title:"Sajik Stadium area", note:"Pre-concert buzz & food stalls", place:"Sajik Baseball Stadium Busan"},
+  ],
+  8:[
+    {title:"Incheon Airport early", note:"Allow time for tax refund & check-in", place:"Incheon Airport Terminal 1 Departures"},
+    {title:"Last-minute gifts", note:"Lotte/Shilla duty free at the gate", place:"Incheon Airport Duty Free"},
+  ],
+};
+
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const WEEK=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const TRIP_START=new Date(2026,5,7);
 const CONCERT=new Date(2026,5,13,19,0,0);
 
-/* ---------------- Persistence (localStorage w/ fallback) ---------------- */
+/* ================= Small utilities ================= */
+function uid(){return "x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function mapUrl(place){return "https://map.naver.com/p/search/"+encodeURIComponent(place);}
+function stampIds(trip){
+  trip.forEach(day=>{
+    if(!day.id) day.id="day-"+day.day;
+    (day.items||[]).forEach((it,i)=>{ if(!it.id) it.id="d"+day.day+"-i"+i; });
+  });
+  return trip;
+}
+
+/* ================= Itinerary persistence ================= */
+let TRIP=[];
+const TRIP_KEY="korea2026:trip";
+function loadTrip(){
+  try{
+    const raw=localStorage.getItem(TRIP_KEY);
+    if(raw){ const p=JSON.parse(raw); if(Array.isArray(p)&&p.length){ TRIP=stampIds(p); return; } }
+  }catch(e){}
+  TRIP=stampIds(clone(DEFAULT_TRIP));
+}
+function saveTrip(){ try{ localStorage.setItem(TRIP_KEY, JSON.stringify(TRIP)); }catch(e){} }
+
+/* ================= Check-off persistence ================= */
 let checks={};
 const STORE_KEY="korea2026:checks";
 const STORE_VERSION=1;
-// Saves straight to the device (localStorage). Changes persist across reloads,
-// app relaunches, and offline use — no network or account needed. A versioned
-// envelope keeps old saves readable if the format ever changes. Falls back to
-// in-memory if storage is blocked (e.g. preview sandbox or Safari private
-// mode) so the app never breaks.
 function loadChecks(){
   try{
     const raw=localStorage.getItem(STORE_KEY);
     if(!raw){ checks={}; return; }
     const parsed=JSON.parse(raw);
-    // v1 envelope: {v:1, checks:{...}}. Bare maps from earlier builds load too.
-    checks=(parsed && typeof parsed==="object" && parsed.v)
-      ? (parsed.checks||{})
-      : (parsed||{});
+    checks=(parsed && typeof parsed==="object" && parsed.v) ? (parsed.checks||{}) : (parsed||{});
   }catch(e){ checks={}; }
 }
 function saveChecks(){
-  try{
-    localStorage.setItem(STORE_KEY, JSON.stringify({v:STORE_VERSION, checks}));
-  }catch(e){ /* in-memory only */ }
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify({v:STORE_VERSION, checks})); }catch(e){}
 }
 
-/* ---------------- Shared cloud sync (optional, graceful) ---------------- */
-// localStorage is the instant offline cache; when a backing store is configured
-// (/api/checks → Redis) every device shares the same progress. If the API is
-// missing (503) or unreachable, the app silently stays in local-only mode.
+/* ================= Optional cloud sync (no-op on static hosting) ================= */
 const API_URL="/api/checks";
-let remoteEnabled=false;       // true after the first successful server response
-const pending=new Set();       // ids with an in-flight write — polls must not clobber
+let remoteEnabled=false;
+const pending=new Set();
 let pollTimer=null;
-
 function canon(o){return JSON.stringify(Object.keys(o).filter(k=>o[k]).sort());}
-
 function setSync(state){
   const el=document.getElementById("syncline");
   if(!el) return;
   const map={
-    local:["On this device","var(--ink-faint)"],
+    local:["Saved on this device","var(--ink-faint)"],
     syncing:["Syncing…","var(--sea)"],
     synced:["Synced across devices","var(--ok)"],
     offline:["Offline · saved locally","var(--accent)"],
   };
   const [txt,col]=map[state]||map.local;
-  el.innerHTML=`<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:${col};display:inline-block"></span>${txt}</span>`;
+  el.innerHTML='<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:7px;height:7px;border-radius:50%;background:'+col+';display:inline-block"></span>'+txt+'</span>';
 }
-
 function applyRemote(data){
   const server=(data&&data.checks)||{};
   const merged={};
   for(const k of Object.keys(server)) if(server[k]) merged[k]=true;
-  for(const id of pending) if(checks[id]) merged[id]=true; // protect in-flight toggles
-  if(canon(merged)===canon(checks)) return;                // nothing changed → no churn
-  checks=merged;
-  saveChecks();
-  renderHero();
-  renderMain();
+  for(const id of pending) if(checks[id]) merged[id]=true;
+  if(canon(merged)===canon(checks)) return;
+  checks=merged; saveChecks(); renderHero(); renderMain();
 }
-
-async function remotePull(){
-  try{
-    const r=await fetch(API_URL,{headers:{Accept:"application/json"}});
-    if(r.status===503){ remoteEnabled=false; setSync("local"); return; }
-    if(!r.ok) throw new Error(r.status);
-    applyRemote(await r.json());
-    remoteEnabled=true; setSync("synced");
-  }catch(e){ setSync(remoteEnabled?"offline":"local"); }
-}
-
 async function remotePush(id,value){
   if(!remoteEnabled) return;
   pending.add(id); setSync("syncing");
   try{
-    const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({id,value})});
+    const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,value})});
     if(!r.ok) throw new Error(r.status);
-    const data=await r.json();
-    pending.delete(id);
-    applyRemote(data);
-    setSync("synced");
+    pending.delete(id); applyRemote(await r.json()); setSync("synced");
   }catch(e){ pending.delete(id); setSync("offline"); }
 }
-
-function startPolling(){
-  if(pollTimer) return;
-  pollTimer=setInterval(()=>{ if(remoteEnabled) remotePull(); },12000);
-}
-
 async function initRemote(){
-  // Union any local (possibly offline-made) check-offs into the shared store,
-  // then adopt the merged result as the source of truth.
   setSync("syncing");
   try{
     const hasLocal=Object.keys(checks).some(k=>checks[k]);
@@ -385,235 +536,492 @@ async function initRemote(){
       ? {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({checks})}
       : {headers:{Accept:"application/json"}};
     const r=await fetch(API_URL,opts);
-    if(r.status===503){ remoteEnabled=false; setSync("local"); return; }
     if(!r.ok) throw new Error(r.status);
-    remoteEnabled=true;
-    applyRemote(await r.json());
-    setSync("synced");
-    startPolling();
-    // Pull fresh state when returning to the tab.
+    remoteEnabled=true; applyRemote(await r.json()); setSync("synced");
+    if(!pollTimer) pollTimer=setInterval(()=>{ if(remoteEnabled) remotePull(); },12000);
     document.addEventListener("visibilitychange",()=>{ if(!document.hidden&&remoteEnabled) remotePull(); });
   }catch(e){ remoteEnabled=false; setSync("local"); }
 }
-
+async function remotePull(){
+  try{
+    const r=await fetch(API_URL,{headers:{Accept:"application/json"}});
+    if(!r.ok) throw new Error(r.status);
+    applyRemote(await r.json()); remoteEnabled=true; setSync("synced");
+  }catch(e){ setSync(remoteEnabled?"offline":"local"); }
+}
 async function remoteReset(){
   if(!remoteEnabled) return;
-  try{ await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reset:true})}); }
-  catch(e){ /* local reset still applied */ }
+  try{ await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({reset:true})}); }catch(e){}
 }
 
-/* ---------------- Helpers ---------------- */
+/* ================= Photo store (IndexedDB) ================= */
+let _dbp=null;
+function db(){
+  if(_dbp) return _dbp;
+  _dbp=new Promise((res,rej)=>{
+    const r=indexedDB.open("korea2026-photos",1);
+    r.onupgradeneeded=()=>{
+      const d=r.result;
+      if(!d.objectStoreNames.contains("photos")){
+        const s=d.createObjectStore("photos",{keyPath:"key",autoIncrement:true});
+        s.createIndex("dayId","dayId",{unique:false});
+      }
+    };
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>rej(r.error);
+  });
+  return _dbp;
+}
+function dbAdd(rec){return db().then(d=>new Promise((res,rej)=>{const tx=d.transaction("photos","readwrite");const rq=tx.objectStore("photos").add(rec);rq.onsuccess=()=>res(rq.result);tx.onerror=()=>rej(tx.error);}));}
+function dbByDay(dayId){return db().then(d=>new Promise((res,rej)=>{const out=[];const idx=d.transaction("photos").objectStore("photos").index("dayId");const rq=idx.openCursor(IDBKeyRange.only(dayId));rq.onsuccess=e=>{const c=e.target.result;if(c){out.push(c.value);c.continue();}else res(out);};rq.onerror=()=>rej(rq.error);}));}
+function dbGet(key){return db().then(d=>new Promise((res,rej)=>{const rq=d.transaction("photos").objectStore("photos").get(key);rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error);}));}
+function dbDel(key){return db().then(d=>new Promise((res,rej)=>{const tx=d.transaction("photos","readwrite");tx.objectStore("photos").delete(key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);}));}
+function fileToThumb(file,max,q){
+  max=max||1280; q=q||.82;
+  return new Promise((res,rej)=>{
+    const img=new Image(); const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      let w=img.naturalWidth,h=img.naturalHeight;
+      if(w>h && w>max){h=Math.round(h*max/w);w=max;} else if(h>=w && h>max){w=Math.round(w*max/h);h=max;}
+      const c=document.createElement("canvas"); c.width=w;c.height=h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      try{ res(c.toDataURL("image/jpeg",q)); }catch(e){ rej(e); }
+    };
+    img.onerror=e=>{ URL.revokeObjectURL(url); rej(e); };
+    img.src=url;
+  });
+}
+
+/* ================= Helpers ================= */
 function todayDayIndex(){
   const now=new Date();
   const t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const diff=Math.floor((t-TRIP_START)/86400000);
-  return Math.min(8,Math.max(1,diff+1));
+  return Math.min(TRIP.length||1,Math.max(1,diff+1));
 }
-function itemId(dayNum,idx){return "d"+dayNum+"-i"+idx;}
-function realItems(day){ // indices of non-section items
-  return day.items.map((it,i)=>({it,i})).filter(x=>!x.it.section);
-}
-function fmtClock(d){
-  let h=d.getHours(),m=d.getMinutes();
-  const ap=h>=12?"PM":"AM";h=h%12||12;
-  return h+":"+String(m).padStart(2,"0")+" "+ap;
-}
+function realItems(day){ return (day.items||[]).map((it,i)=>({it,i})).filter(x=>!x.it.section); }
+function fmtClock(d){ let h=d.getHours(),m=d.getMinutes(); const ap=h>=12?"PM":"AM"; h=h%12||12; return h+":"+String(m).padStart(2,"0")+" "+ap; }
+function parseDate(s){ const p=String(s||"").split("-").map(Number); return new Date(p[0],(p[1]||1)-1,p[2]||1); }
 
-let selectedDay=todayDayIndex();
-const TODAY=todayDayIndex();
+let selectedDay=1, TODAY=1, editMode=false;
 
-/* ---------------- Render: header / hero ---------------- */
-function pinSVG(){return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';}
+/* ================= Icons ================= */
+function pinNaverSVG(){return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';}
 function checkSVG(){return '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.2"><polyline points="20 6 9 17 4 12"/></svg>';}
+function pinHtmlInline(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';}
 
+/* ================= Render: header / hero / concert ================= */
 function renderHeaderMeta(){
-  const d=TRIP[TODAY-1];
-  const dd=new Date(d.date);
+  const d=TRIP[TODAY-1]; if(!d) return;
+  const dd=parseDate(d.date);
   document.getElementById("hcity").textContent=d.city;
-  document.getElementById("hdayinfo").textContent="Day "+TODAY+" of 8";
+  document.getElementById("hdayinfo").textContent="Day "+TODAY+" of "+TRIP.length;
   document.getElementById("hdate").textContent=dd.getDate()+" "+MONTHS[dd.getMonth()];
 }
-
 function renderHero(){
-  const d=TRIP[TODAY-1];
-  const dd=new Date(d.date);
+  const d=TRIP[TODAY-1]; if(!d) return;
+  const dd=parseDate(d.date);
   const ri=realItems(d);
-  const done=ri.filter(x=>checks[itemId(d.day,x.i)]).length;
+  const done=ri.filter(x=>checks[x.it.id]).length;
   const total=ri.length;
   const pct=total?Math.round(done/total*100):0;
-
-  // next-up among timed items today
-  const now=new Date();
-  const mins=now.getHours()*60+now.getMinutes();
+  const now=new Date(); const mins=now.getHours()*60+now.getMinutes();
   let nextItem=null;
   for(const x of ri){
-    if(x.it.t){
-      const[h,m]=x.it.t.split(":").map(Number);
-      if(h*60+m>=mins && !checks[itemId(d.day,x.i)]){nextItem=x.it;break;}
-    }
+    if(x.it.t){ const p=x.it.t.split(":").map(Number); if(p[0]*60+p[1]>=mins && !checks[x.it.id]){nextItem=x.it;break;} }
   }
   let nextHtml="";
-  if(d.free){
-    nextHtml=`<div class="next"><span class="tag">FREE</span><div class="ntxt"><b>Open day — explore Busan</b><span>Nothing scheduled. Wander.</span></div></div>`;
+  if(d.free && !total){
+    nextHtml='<div class="next"><span class="tag">FREE</span><div class="ntxt"><b>Open day — explore '+esc(d.city)+'</b><span>Nothing scheduled. Wander.</span></div></div>';
   } else if(nextItem){
-    nextHtml=`<div class="next"><span class="tag">NEXT</span><div class="ntxt"><b>${nextItem.title}</b><span>${nextItem.time||""}${nextItem.note?" · "+nextItem.note:""}</span></div></div>`;
+    nextHtml='<div class="next"><span class="tag">NEXT</span><div class="ntxt"><b>'+esc(nextItem.title)+'</b><span>'+esc(nextItem.time||"")+(nextItem.note?" · "+esc(nextItem.note):"")+'</span></div></div>';
   } else if(total && done===total){
-    nextHtml=`<div class="next"><span class="tag done">DONE</span><div class="ntxt"><b>All wrapped for today</b><span>Nice. Rest up.</span></div></div>`;
+    nextHtml='<div class="next"><span class="tag done">DONE</span><div class="ntxt"><b>All wrapped for today</b><span>Nice. Rest up.</span></div></div>';
   } else {
-    nextHtml=`<div class="next"><span class="tag">TODAY</span><div class="ntxt"><b>${d.theme}</b><span>${d.city}</span></div></div>`;
+    nextHtml='<div class="next"><span class="tag">TODAY</span><div class="ntxt"><b>'+esc(d.theme)+'</b><span>'+esc(d.city)+'</span></div></div>';
   }
-
-  document.getElementById("hero").innerHTML=`
-    <div class="eyebrow">Today · Day ${TODAY}</div>
-    <h1>${d.weekday}, ${dd.getDate()} ${MONTHS[dd.getMonth()]}</h1>
-    <div class="sub">${d.theme} — ${d.city}</div>
-    ${nextHtml}
-    ${total?`<div class="prog"><div class="bar"><div class="fill" style="width:${pct}%"></div></div><div class="lbl">${done} of ${total} done · ${pct}%</div></div>`:""}
-  `;
+  document.getElementById("hero").innerHTML=
+    '<div class="eyebrow">Today · Day '+TODAY+'</div>'+
+    '<h1>'+esc(d.weekday)+', '+dd.getDate()+' '+MONTHS[dd.getMonth()]+'</h1>'+
+    '<div class="sub">'+esc(d.theme)+' — '+esc(d.city)+'</div>'+
+    nextHtml+
+    (total?'<div class="prog"><div class="bar"><div class="fill" style="width:'+pct+'%"></div></div><div class="lbl">'+done+' of '+total+' done · '+pct+'%</div></div>':"");
 }
-
 function renderConcert(){
-  const now=new Date();
-  const diff=CONCERT-now;
-  const el=document.getElementById("concert");
+  const now=new Date(); const diff=CONCERT-now; const el=document.getElementById("concert");
   if(diff<=0){
     const past=now-CONCERT;
-    if(past < 6*3600000){
-      el.innerHTML=`<span class="star">★</span><div class="cinfo"><div class="k">Right now</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">LIVE</div><div class="small">enjoy it</div></div>`;
-    } else {
-      el.innerHTML=`<span class="star">★</span><div class="cinfo"><div class="k">The concert</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">♥</div><div class="small">done & dusted</div></div>`;
-    }
+    el.innerHTML = past < 6*3600000
+      ? '<span class="star">★</span><div class="cinfo"><div class="k">Right now</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">LIVE</div><div class="small">enjoy it</div></div>'
+      : '<span class="star">★</span><div class="cinfo"><div class="k">The concert</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">♥</div><div class="small">done & dusted</div></div>';
     return;
   }
-  const days=Math.floor(diff/86400000);
-  const hrs=Math.floor((diff%86400000)/3600000);
-  const mins=Math.floor((diff%3600000)/60000);
+  const days=Math.floor(diff/86400000), hrs=Math.floor((diff%86400000)/3600000), mins=Math.floor((diff%3600000)/60000);
   let big,small;
   if(days>=1){big="D-"+days;small=hrs+"h "+mins+"m to go";}
   else{big=String(hrs).padStart(2,"0")+":"+String(mins).padStart(2,"0");small="hours to showtime";}
-  el.innerHTML=`<span class="star">★</span><div class="cinfo"><div class="k">Countdown to</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">${big}</div><div class="small">${small}</div></div>`;
+  el.innerHTML='<span class="star">★</span><div class="cinfo"><div class="k">Countdown to</div><div class="v">BTS · Busan Asiad</div></div><div class="cd"><div class="big">'+big+'</div><div class="small">'+small+'</div></div>';
 }
 
-/* ---------------- Render: day tabs ---------------- */
+/* ================= Render: day tabs ================= */
 function renderDays(){
-  const nav=document.getElementById("days");
-  nav.innerHTML="";
+  const nav=document.getElementById("days"); nav.innerHTML="";
   TRIP.forEach(d=>{
-    const dd=new Date(d.date);
+    const dd=parseDate(d.date);
     const b=document.createElement("button");
     b.className="daybtn"+(d.day===selectedDay?" active":"")+(d.day===TODAY?" today":"");
-    b.innerHTML=`<div class="d">${["SUN","MON","TUE","WED","THU","FRI","SAT"][dd.getDay()]}</div><div class="n">${dd.getDate()}</div>`;
+    b.innerHTML='<div class="d">'+["SUN","MON","TUE","WED","THU","FRI","SAT"][dd.getDay()]+'</div><div class="n">'+dd.getDate()+'</div>';
     b.onclick=()=>{selectedDay=d.day;renderDays();renderMain();window.scrollTo({top:document.getElementById("days").offsetTop-70,behavior:"smooth"});};
     nav.appendChild(b);
   });
-  // scroll active into view
+  if(editMode){
+    const add=document.createElement("button");
+    add.className="daybtn adddaybtn"; add.innerHTML="+"; add.title="Add a day"; add.onclick=addDay;
+    nav.appendChild(add);
+  }
   const act=nav.querySelector(".active");
   if(act) act.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"});
 }
 
-/* ---------------- Render: main list ---------------- */
+/* ================= Render: main list ================= */
 function renderMain(){
-  const d=TRIP[selectedDay-1];
-  const dd=new Date(d.date);
-  const now=new Date();
-  const mins=now.getHours()*60+now.getMinutes();
+  const d=TRIP[selectedDay-1]; if(!d) return;
+  const dd=parseDate(d.date);
+  const now=new Date(); const mins=now.getHours()*60+now.getMinutes();
   const isToday=d.day===TODAY;
 
-  // find next-up index for today
   let nextIdx=-1;
   if(isToday && !d.free){
     for(const x of realItems(d)){
-      if(x.it.t){
-        const[h,m]=x.it.t.split(":").map(Number);
-        if(h*60+m>=mins && !checks[itemId(d.day,x.i)]){nextIdx=x.i;break;}
-      }
+      if(x.it.t){ const p=x.it.t.split(":").map(Number); if(p[0]*60+p[1]>=mins && !checks[x.it.id]){nextIdx=x.i;break;} }
     }
   }
 
-  let html=`<div class="dayhead" id="day${d.day}">
-    <div class="l"><div class="kicker">Day ${d.day}${isToday?" · Today":""}</div>
-      <h2>${d.weekday}</h2><div class="theme">${d.theme}</div></div>
-    <div class="r"><span class="city">${pinHtmlInline()}${d.city}</span><br><span style="display:inline-block;margin-top:6px">${dd.getDate()} ${MONTHS[dd.getMonth()]}</span></div>
-  </div>`;
+  let html='<div class="dayhead" id="day'+d.day+'">'+
+    '<div class="l"><div class="kicker">Day '+d.day+(isToday?" · Today":"")+'</div>'+
+    '<h2>'+esc(d.weekday)+'</h2><div class="theme">'+esc(d.theme)+'</div>'+
+    (editMode?'<button class="editdaybtn" data-act="editday">Edit day details</button>':"")+'</div>'+
+    '<div class="r"><span class="city">'+pinHtmlInline()+esc(d.city)+'</span><br><span style="display:inline-block;margin-top:6px">'+dd.getDate()+' '+MONTHS[dd.getMonth()]+'</span></div>'+
+  '</div>';
 
-  if(d.free){
-    html+=`<div class="free"><div class="big">No plans today</div>An open day in Busan — sleep in, find a café, follow the coast wherever.</div>`;
-    document.getElementById("main").innerHTML=html;
-    return;
+  const showList = !(d.free && (d.items||[]).length===0 && !editMode);
+  if(!showList){
+    html+='<div class="free"><div class="big">No plans today</div>An open day in '+esc(d.city)+' — sleep in, find a café, follow the coast wherever.</div>';
+  } else {
+    html+="<ul class='list'>";
+    const items=d.items||[];
+    items.forEach((it,i)=>{
+      if(it.section){
+        html+='<li class="section-h">'+esc(it.section);
+        if(editMode){
+          html+='<span style="margin-left:auto;display:flex;gap:5px">'+moveBtns(i,items.length)+'<button class="tbtn" data-act="edititem" data-idx="'+i+'">'+penIcon()+'</button><button class="tbtn del" data-act="delitem" data-idx="'+i+'">'+trashIcon()+'</button></span>';
+        }
+        html+='</li>'; return;
+      }
+      const on=!!checks[it.id]; const nu=(i===nextIdx);
+      const badge=it.badge?'<span class="badge '+esc(it.badge)+'">'+esc(it.badgetext||"")+'</span>':"";
+      const nextBadge=nu?'<span class="badge next">NEXT</span>':"";
+      const timeLine=it.time?'<div class="time">'+esc(it.time)+'</div>':"";
+      if(editMode){
+        html+='<li class="item editing" id="li-'+it.id+'">'+
+          '<div class="ibody" data-act="edititem" data-idx="'+i+'">'+timeLine+'<div class="title">'+esc(it.title)+badge+'</div>'+(it.note?'<div class="note">'+esc(it.note)+'</div>':"")+(it.place?'<div class="note" style="color:var(--sea)">📍 '+esc(it.place)+'</div>':"")+'</div>'+
+          '<div class="itools"><div class="moverow">'+moveBtns(i,items.length)+'</div><button class="tbtn del" data-act="delitem" data-idx="'+i+'">'+trashIcon()+'</button></div>'+
+        '</li>';
+      } else {
+        const pin=it.place?'<a class="pin" target="_blank" rel="noopener" href="'+mapUrl(it.place)+'" onclick="event.stopPropagation()">'+pinNaverSVG()+'</a>':"";
+        html+='<li class="item'+(on?" checked":"")+(nu?" next-up":"")+'" id="li-'+it.id+'">'+
+          '<div class="cbox" data-act="toggle" data-id="'+it.id+'">'+checkSVG()+'</div>'+
+          '<div class="ibody" data-act="toggle" data-id="'+it.id+'">'+timeLine+'<div class="title">'+esc(it.title)+badge+nextBadge+'</div>'+(it.note?'<div class="note">'+esc(it.note)+'</div>':"")+'</div>'+
+          pin+
+        '</li>';
+      }
+    });
+    html+="</ul>";
+    if(editMode){
+      html+='<button class="addbtn" data-act="additem"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add item</button>';
+      html+='<button class="addbtn" data-act="addsection" style="margin-top:8px;color:var(--accent-deep)">+ Add section heading</button>';
+    }
   }
 
-  html+="<ul class='list'>";
-  d.items.forEach((it,i)=>{
-    if(it.section){html+=`<li class="section-h">${it.section}</li>`;return;}
-    const id=itemId(d.day,i);
-    const on=!!checks[id];
-    const nu=(i===nextIdx);
-    const badge=it.badge?`<span class="badge ${it.badge}">${it.badgetext}</span>`:"";
-    const nextBadge=nu?`<span class="badge next">NEXT</span>`:"";
-    const timeLine=it.time?`<div class="time">${it.time}</div>`:"";
-    const pin=it.place?`<a class="pin" target="_blank" rel="noopener" href="https://maps.google.com/?q=${encodeURIComponent(it.place)}" onclick="event.stopPropagation()">${pinSVG()}</a>`:"";
-    html+=`<li class="item${on?" checked":""}${nu?" next-up":""}" id="li-${id}">
-      <div class="cbox" data-id="${id}" data-day="${d.day}">${checkSVG()}</div>
-      <div class="ibody" data-id="${id}" data-day="${d.day}">
-        ${timeLine}
-        <div class="title">${it.title}${badge}${nextBadge}</div>
-        ${it.note?`<div class="note">${it.note}</div>`:""}
-      </div>
-      ${pin}
-    </li>`;
-  });
-  html+="</ul>";
-  document.getElementById("main").innerHTML=html;
+  /* photos */
+  html+='<div class="photos" id="photos-'+d.id+'">'+
+    '<h4>📸 Memories <span class="cnt" id="pcount-'+d.id+'"></span></h4>'+
+    '<div class="pstrip" id="pstrip-'+d.id+'">'+
+      '<label class="addphoto"><input type="file" accept="image/*" capture="environment" hidden>'+
+      '<svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'+
+      '<span>SNAP</span></label>'+
+    '</div>'+
+    '<div class="pnote">Saved on this device</div>'+
+  '</div>';
 
-  document.querySelectorAll(".cbox,.ibody").forEach(el=>{
-    el.addEventListener("click",e=>{
-      const id=el.getAttribute("data-id");
-      toggle(id);
+  /* suggestions */
+  const sg=SUGGESTIONS[d.day]||[];
+  if(sg.length){
+    html+='<div class="sugg" id="sugg-'+d.id+'">'+
+      '<div class="sugg-head" data-act="sugg-toggle"><span class="spark">✨</span><div class="st"><b>AI suggestions for '+esc(d.city)+'</b><span>'+sg.length+' more ideas · tap to add</span></div><span class="chev"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>'+
+      '<div class="sugg-list">';
+    sg.forEach((s,si)=>{
+      html+='<div class="sugg-item"><div class="si"><div class="t">'+esc(s.title)+(s.place?' <a href="'+mapUrl(s.place)+'" target="_blank" rel="noopener" style="text-decoration:none">📍</a>':"")+'</div><div class="n">'+esc(s.note||"")+'</div></div>'+
+        '<button class="sugg-add" data-act="sugg-add" data-s="'+si+'"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>';
     });
-  });
+    html+='</div></div>';
+  }
+
+  document.getElementById("main").innerHTML=html;
+  loadDayPhotos(d);
 }
+function moveBtns(i,len){
+  return '<button class="tbtn" data-act="moveup" data-idx="'+i+'"'+(i===0?' style="opacity:.3"':"")+'>'+upIcon()+'</button>'+
+         '<button class="tbtn" data-act="movedown" data-idx="'+i+'"'+(i===len-1?' style="opacity:.3"':"")+'>'+downIcon()+'</button>';
+}
+function penIcon(){return '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';}
+function trashIcon(){return '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';}
+function upIcon(){return '<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>';}
+function downIcon(){return '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';}
 
-function pinHtmlInline(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M12 21s-7-5.7-7-11a7 7 0 1 1 14 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';}
-
+/* ================= Check-off toggle ================= */
 function toggle(id){
   const now=!checks[id];
   if(now) checks[id]=true; else delete checks[id];
   const li=document.getElementById("li-"+id);
-  if(li){
-    li.classList.toggle("checked",now);
-    if(now){li.classList.add("justchecked");setTimeout(()=>li.classList.remove("justchecked"),260);}
+  if(li){ li.classList.toggle("checked",now); if(now){li.classList.add("justchecked");setTimeout(()=>li.classList.remove("justchecked"),260);} }
+  saveChecks(); remotePush(id,now); renderHero(); renderMain();
+}
+
+/* ================= Editing ================= */
+function setEditMode(on){
+  editMode=on;
+  document.getElementById("editBtn").classList.toggle("on",on);
+  document.getElementById("editBanner").style.display=on?"flex":"none";
+  renderDays(); renderMain();
+}
+function curDay(){ return TRIP[selectedDay-1]; }
+
+function openItemEditor(idx, asSection){
+  const day=curDay();
+  const editing = idx!=null;
+  const it = editing ? day.items[idx] : (asSection?{section:""}:{title:"",time:"",t:"",note:"",place:"",badge:""});
+  const isSection = !!it.section || (!editing && asSection);
+  let body='<div class="grab"></div><h3>'+(editing?"Edit":"Add")+(isSection?" section":" item")+'</h3>';
+  if(isSection){
+    body+='<div class="field"><label>Section heading</label><input type="text" id="f-section" value="'+esc(it.section||"")+'" placeholder="e.g. Seongsu"></div>';
+  } else {
+    body+='<div class="field"><label>Title</label><input type="text" id="f-title" value="'+esc(it.title||"")+'" placeholder="What is the plan?"></div>'+
+      '<div class="frow">'+
+        '<div class="field"><label>Time label</label><input type="text" id="f-time" value="'+esc(it.time||"")+'" placeholder="09:00 AM / Evening"></div>'+
+        '<div class="field"><label>Sort time</label><input type="text" id="f-t" value="'+esc(it.t||"")+'" placeholder="HH:MM"></div>'+
+      '</div>'+
+      '<div class="hint">Sort time (24h, e.g. 14:30) powers the "next up" highlight. Optional.</div>'+
+      '<div class="field"><label>Note</label><textarea id="f-note" placeholder="Optional detail">'+esc(it.note||"")+'</textarea></div>'+
+      '<div class="field"><label>Place (for Naver map pin)</label><input type="text" id="f-place" value="'+esc(it.place||"")+'" placeholder="Search term, e.g. Gwangalli Beach"></div>'+
+      '<div class="field"><label>Badge</label><select id="f-badge"><option value="">None</option><option value="star"'+(it.badge==="star"?" selected":"")+'>★ Highlight (purple)</option><option value="heart"'+(it.badge==="heart"?" selected":"")+'>♥ Special (red)</option></select></div>'+
+      '<div class="field"><label>Badge text</label><input type="text" id="f-badgetext" value="'+esc(it.badgetext||"")+'" placeholder="e.g. ♥ Anniversary"></div>';
   }
-  saveChecks();
-  remotePush(id,now); // sync to other devices (no-op in local-only mode)
-  renderHero(); // update progress + next
-  renderMain(); // refresh next-up highlight
+  body+='<div class="btnrow">'+
+    (editing?'<button class="btn danger" id="f-del">'+trashIcon()+'</button>':"")+
+    '<button class="btn ghost" id="f-cancel">Cancel</button>'+
+    '<button class="btn primary" id="f-save">Save</button>'+
+  '</div>';
+  openSheet(body);
+  document.getElementById("f-cancel").onclick=closeSheet;
+  if(editing) document.getElementById("f-del").onclick=()=>{ closeSheet(); deleteItem(idx); };
+  document.getElementById("f-save").onclick=()=>{
+    if(isSection){
+      const v=document.getElementById("f-section").value.trim();
+      if(!v){ closeSheet(); return; }
+      if(editing) day.items[idx].section=v; else day.items.push({id:uid(),section:v});
+    } else {
+      const obj={
+        title:document.getElementById("f-title").value.trim(),
+        time:document.getElementById("f-time").value.trim(),
+        t:document.getElementById("f-t").value.trim(),
+        note:document.getElementById("f-note").value.trim(),
+        place:document.getElementById("f-place").value.trim(),
+        badge:document.getElementById("f-badge").value,
+        badgetext:document.getElementById("f-badgetext").value.trim(),
+      };
+      if(!obj.title){ alert("Give it a title first."); return; }
+      if(editing){ Object.assign(day.items[idx],obj); }
+      else { obj.id=uid(); day.items.push(obj); }
+    }
+    saveTrip(); closeSheet(); renderHero(); renderMain();
+  };
+}
+function deleteItem(idx){
+  const day=curDay(); const it=day.items[idx]; if(!it) return;
+  const label=it.section?('section "'+it.section+'"'):('"'+it.title+'"');
+  if(!confirm("Delete "+label+"?")) return;
+  if(it.id) delete checks[it.id];
+  day.items.splice(idx,1);
+  saveTrip(); saveChecks(); renderHero(); renderMain();
+}
+function moveItem(idx,dir){
+  const day=curDay(); const j=idx+dir;
+  if(j<0||j>=day.items.length) return;
+  const a=day.items; const tmp=a[idx]; a[idx]=a[j]; a[j]=tmp;
+  saveTrip(); renderMain();
+}
+function openDayEditor(){
+  const day=curDay();
+  let body='<div class="grab"></div><h3>Edit day '+day.day+'</h3>'+
+    '<div class="frow">'+
+      '<div class="field"><label>Weekday</label><input type="text" id="d-week" value="'+esc(day.weekday||"")+'"></div>'+
+      '<div class="field"><label>Date</label><input type="date" id="d-date" value="'+esc(day.date||"")+'"></div>'+
+    '</div>'+
+    '<div class="field"><label>City</label><input type="text" id="d-city" value="'+esc(day.city||"")+'"></div>'+
+    '<div class="field"><label>Theme</label><input type="text" id="d-theme" value="'+esc(day.theme||"")+'"></div>'+
+    '<div class="checkrow"><input type="checkbox" id="d-free" '+(day.free?"checked":"")+'><label style="margin:0;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink)">Free / open day</label></div>'+
+    '<div class="btnrow">'+
+      (TRIP.length>1?'<button class="btn danger" id="d-del">'+trashIcon()+'</button>':"")+
+      '<button class="btn ghost" id="d-cancel">Cancel</button>'+
+      '<button class="btn primary" id="d-save">Save</button>'+
+    '</div>';
+  openSheet(body);
+  document.getElementById("d-cancel").onclick=closeSheet;
+  if(TRIP.length>1) document.getElementById("d-del").onclick=()=>{ closeSheet(); deleteDay(); };
+  document.getElementById("d-save").onclick=()=>{
+    day.weekday=document.getElementById("d-week").value.trim();
+    day.date=document.getElementById("d-date").value||day.date;
+    day.city=document.getElementById("d-city").value.trim();
+    day.theme=document.getElementById("d-theme").value.trim();
+    day.free=document.getElementById("d-free").checked;
+    saveTrip(); closeSheet(); renderHeaderMeta(); renderHero(); renderDays(); renderMain();
+  };
+}
+function renumber(){ TRIP.forEach((d,i)=>{ d.day=i+1; }); }
+function addDay(){
+  const last=TRIP[TRIP.length-1];
+  const nd=parseDate(last?last.date:"2026-06-07"); nd.setDate(nd.getDate()+1);
+  const iso=nd.getFullYear()+"-"+String(nd.getMonth()+1).padStart(2,"0")+"-"+String(nd.getDate()).padStart(2,"0");
+  TRIP.push({id:uid(),day:TRIP.length+1,date:iso,weekday:WEEK[nd.getDay()],city:last?last.city:"",theme:"New day",items:[]});
+  renumber(); saveTrip(); selectedDay=TRIP.length; setEditMode(true); renderDays(); renderMain();
+  window.scrollTo({top:document.getElementById("days").offsetTop-70,behavior:"smooth"});
+}
+function deleteDay(){
+  const day=curDay();
+  if(!confirm('Delete day '+day.day+' ("'+day.theme+'") and its items?')) return;
+  (day.items||[]).forEach(it=>{ if(it.id) delete checks[it.id]; });
+  TRIP.splice(selectedDay-1,1); renumber();
+  if(selectedDay>TRIP.length) selectedDay=TRIP.length;
+  saveTrip(); saveChecks(); renderHeaderMeta(); renderHero(); renderDays(); renderMain();
+}
+function addSuggestion(si){
+  const day=curDay(); const s=(SUGGESTIONS[day.day]||[])[si]; if(!s) return;
+  day.items.push({id:uid(),title:s.title,note:s.note||"",place:s.place||"",time:"",t:""});
+  saveTrip(); renderHero(); renderMain();
+  // mark the button added (re-render replaced it, so flash via re-query after paint)
+  requestAnimationFrame(()=>{
+    const btn=document.querySelector('.sugg-add[data-s="'+si+'"]');
+    if(btn){ btn.classList.add("added"); }
+    const sg=document.getElementById("sugg-"+day.id); if(sg) sg.classList.add("open");
+  });
 }
 
-/* ---------------- Tick ---------------- */
-function tick(){
-  document.getElementById("clock").textContent=fmtClock(new Date());
-  renderConcert();
+/* ================= Photos UI ================= */
+async function loadDayPhotos(day){
+  let recs=[];
+  try{ recs=await dbByDay(day.id); }catch(e){ recs=[]; }
+  const strip=document.getElementById("pstrip-"+day.id);
+  const cnt=document.getElementById("pcount-"+day.id);
+  if(!strip) return;
+  if(cnt) cnt.textContent=recs.length?recs.length+(recs.length===1?" photo":" photos"):"";
+  // keep the add button (first child), append thumbs after it
+  recs.sort((a,b)=>a.ts-b.ts);
+  for(const r of recs){
+    const img=document.createElement("img");
+    img.className="thumb"; img.src=r.data; img.loading="lazy";
+    img.dataset.key=r.key;
+    img.addEventListener("click",()=>openViewer(r.key));
+    strip.appendChild(img);
+  }
+}
+async function handlePhoto(file){
+  if(!file) return;
+  const day=curDay();
+  try{
+    const data=await fileToThumb(file,1280,.82);
+    await dbAdd({dayId:day.id,data:data,ts:Date.now()});
+    renderMain(); // reloads strip
+  }catch(e){ alert("Couldn't save that photo. Try again."); }
+}
+async function openViewer(key){
+  let rec; try{ rec=await dbGet(key); }catch(e){}
+  if(!rec) return;
+  const v=document.getElementById("viewer");
+  v.innerHTML='<img src="'+rec.data+'" alt="">'+
+    '<div class="vbar"><button class="vbtn close" id="v-close">Close</button><button class="vbtn del" id="v-del">Delete</button></div>';
+  v.hidden=false;
+  document.getElementById("v-close").onclick=()=>{ v.hidden=true; v.innerHTML=""; };
+  document.getElementById("v-del").onclick=async()=>{
+    if(!confirm("Delete this photo?")) return;
+    try{ await dbDel(key); }catch(e){}
+    v.hidden=true; v.innerHTML=""; renderMain();
+  };
 }
 
-/* ---------------- Init ---------------- */
-(async function init(){
-  await loadChecks();
+/* ================= Bottom sheet ================= */
+function openSheet(html){
+  const s=document.getElementById("sheet");
+  document.getElementById("sheetBody").innerHTML=html;
+  s.hidden=false;
+}
+function closeSheet(){ const s=document.getElementById("sheet"); s.hidden=true; document.getElementById("sheetBody").innerHTML=""; }
+
+/* ================= Delegated events on #main ================= */
+function wireMain(){
+  const main=document.getElementById("main");
+  main.addEventListener("click",e=>{
+    const t=e.target.closest("[data-act]"); if(!t) return;
+    const act=t.dataset.act;
+    if(act==="toggle"){ if(!editMode) toggle(t.dataset.id); }
+    else if(act==="edititem"){ openItemEditor(+t.dataset.idx,false); }
+    else if(act==="delitem"){ deleteItem(+t.dataset.idx); }
+    else if(act==="moveup"){ moveItem(+t.dataset.idx,-1); }
+    else if(act==="movedown"){ moveItem(+t.dataset.idx,1); }
+    else if(act==="additem"){ openItemEditor(null,false); }
+    else if(act==="addsection"){ openItemEditor(null,true); }
+    else if(act==="editday"){ openDayEditor(); }
+    else if(act==="sugg-add"){ addSuggestion(+t.dataset.s); }
+    else if(act==="sugg-toggle"){ t.closest(".sugg").classList.toggle("open"); }
+  });
+  main.addEventListener("change",e=>{
+    const inp=e.target.closest('input[type=file]');
+    if(inp && inp.files && inp.files[0]){ const f=inp.files[0]; inp.value=""; handlePhoto(f); }
+  });
+}
+
+/* ================= Tick ================= */
+function tick(){ document.getElementById("clock").textContent=fmtClock(new Date()); renderConcert(); }
+
+/* ================= Init ================= */
+(function init(){
+  loadTrip();
+  loadChecks();
+  TODAY=todayDayIndex();
+  selectedDay=TODAY;
+
   renderHeaderMeta();
   renderHero();
   renderConcert();
   renderDays();
+  wireMain();
   renderMain();
   tick();
   setInterval(tick,1000);
-  // refresh hero "next" every 30s
-  setInterval(()=>{renderHero();if(selectedDay===TODAY)renderMain();},30000);
+  setInterval(()=>{ renderHero(); if(selectedDay===TODAY) renderMain(); },30000);
 
-  initRemote(); // kick off shared sync (falls back to local-only silently)
+  // Naver links for the stays card
+  document.querySelectorAll(".stay-pin").forEach(a=>{
+    a.href=mapUrl(a.dataset.place||""); a.innerHTML=pinNaverSVG();
+  });
 
-  document.getElementById("reset").addEventListener("click",async()=>{
-    if(confirm("Clear every check-off across all 8 days?")){
-      checks={};saveChecks();remoteReset();renderHero();renderMain();
-    }
+  initRemote();
+
+  document.getElementById("editBtn").addEventListener("click",()=>setEditMode(!editMode));
+  document.getElementById("sheetBg").addEventListener("click",closeSheet);
+  document.getElementById("reset").addEventListener("click",()=>{
+    if(confirm("Clear every check-off across all days?")){ checks={}; saveChecks(); remoteReset(); renderHero(); renderMain(); }
   });
 })();
 </script>

@@ -257,6 +257,8 @@ body{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
 .nudge-pop{bottom:calc(94px + env(safe-area-inset-bottom))}
 .view.active{animation:viewin .34s cubic-bezier(.2,.8,.2,1)}
 @keyframes viewin{from{opacity:0;transform:translateY(16px) scale(.992)}to{opacity:1;transform:none}}
+/* full-face portrait oval in drape mirror */
+.mirror .drape-face{width:44%;aspect-ratio:3/4}
 </style>
 </head>
 <body>
@@ -667,7 +669,7 @@ function startAnalysis(){
    <p class="muted" style="margin:0 2px 6px">Photo + a short quiz — <b>we do all the judging for you</b>, just like the studio. No fashion knowledge needed.</p>
    <button class="method" onclick="haptic();chooseMethod('camera')"><span class="ico">🤳</span><div><b>Take a selfie</b><p class="muted">Best accuracy. We'll walk you through a quick prep checklist first.</p></div></button>
    <button class="method" onclick="haptic();chooseMethod('upload')"><span class="ico">🖼️</span><div><b>Upload a photo</b><p class="muted">A recent bare-face photo in natural light works great.</p></div></button>
-   <button class="method" onclick="haptic();chooseMethod('quiz')"><span class="ico">📝</span><div><b>Skip photo — quiz only</b><p class="muted">No camera needed. Slightly less precise, still very good.</p></div></button>`;
+   <p class="muted" style="margin:10px 2px 0">A photo is required — it's what makes the analysis accurate. The quiz fine-tunes it afterwards.</p>`;
 }
 function renderSteps(){
   $("#anSteps").innerHTML=Array.from({length:4},(_,i)=>`<i class="${i<=an.step?"on":""}"></i>`).join("");
@@ -675,7 +677,6 @@ function renderSteps(){
 function chooseMethod(m){
   an.method=m;
   $("#anRestart").style.display="inline-flex";
-  if(m==="quiz"){renderQuiz(0);return;}
   renderPrep();
 }
 function renderPrep(){
@@ -690,7 +691,6 @@ function renderPrep(){
      <div class="check-li"><span class="ic">⬜</span><div><b>Plain background</b><span>A white or grey wall behind you helps.</span></div></div>
    </div>
    <button class="btn accent" onclick="haptic();renderPhoto()">I'm ready 📸</button>
-   <button class="btn ghost" style="margin-top:8px" onclick="haptic();an.method='quiz';renderQuiz(0)">Skip photo — quiz only</button>
    <p class="muted" style="text-align:center;margin-top:10px">Don't worry — we check your lighting automatically after the shot.</p>`;
 }
 function renderPhoto(restore){
@@ -741,8 +741,8 @@ function drawToWork(src,sw,sh,mirrorImg){
   ctx.drawImage(src,cx,cy,cw,ch,0,0,W,H);
   ctx.restore();
   an.captured=true;
-  const fc=document.createElement("canvas");fc.width=fc.height=360;
-  fc.getContext("2d").drawImage(wc,W*0.22,H*0.16,W*0.56,W*0.56,0,0,360,360);
+  const fc=document.createElement("canvas");fc.width=360;fc.height=480;
+  fc.getContext("2d").drawImage(wc,W*0.21,H*0.21,W*0.58,H*0.58,0,0,360,480);
   an.faceUrl=fc.toDataURL("image/jpeg",0.82);
   afterCapture(false);
 }
@@ -768,54 +768,66 @@ function afterCapture(restore){
   disp.width=wc.width;disp.height=wc.height;disp.getContext("2d").drawImage(wc,0,0);
   $("#faceGuide").innerHTML="";
   disp.onclick=e=>{
-    if(an.samples.length>=3){an.samples=[];$$(".tap-mark").forEach(m=>m.remove());renderSampleRow();}
     const r=disp.getBoundingClientRect();
-    samplePoint((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height,e.clientX-r.left,e.clientY-r.top,stage);
+    sampleAt((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height,e.clientX-r.left,e.clientY-r.top,stage);
   };
   const issues=lightingCheck();
   $("#quality").innerHTML=issues.length
     ?`<div class="quality warn">⚠️ <span>${esc(issues[0])}</span></div>`
     :`<div class="quality good">✓ Lighting looks good</div>`;
-  if(!restore){an.samples=[];$$(".tap-mark").forEach(m=>m.remove());autoSample();}
-  renderSampleRow();
+  if(!restore)autoSample();
+  renderSkinChip();
   $("#photoControls").innerHTML=`
    <div class="row">
      <button class="btn ghost" style="flex:1" onclick="haptic();retakePhoto()">↺ Retake</button>
-     <button class="btn primary" style="flex:1" id="toQuizBtn" ${an.samples.length>=3?"":"disabled"} onclick="haptic();renderQuiz(0)">Looks good →</button>
+     <button class="btn primary" style="flex:1" id="toQuizBtn" ${an.samples.length?"":"disabled"} onclick="haptic();renderQuiz(0)">Looks good →</button>
    </div>
-   <p class="muted" style="margin:8px 2px 0">We auto-picked 3 skin points for you. Tap the photo to choose your own (avoid shadows, blush, hairline).</p>`;
+   <p class="muted" style="margin:8px 2px 0">If the detected shade looks off (shadow, hair, makeup), tap a clear patch of your <b>cheek</b> on the photo and we'll re-read it.</p>`;
 }
 function retakePhoto(){an.samples=[];an.captured=false;an.faceUrl=null;renderPhoto();}
-function samplePoint(nx,ny,px,py,stage){
-  if(an.samples.length>=3)return;
-  const wc=$("#workCanvas"),ctx=wc.getContext("2d");
-  const x=Math.round(nx*wc.width),y=Math.round(ny*wc.height),R=7;
-  const d=ctx.getImageData(Math.max(0,x-R),Math.max(0,y-R),R*2+1,R*2+1).data;
+function readPoint(nx,ny){
+  const wc=$("#workCanvas"),ctx=wc.getContext("2d"),R=7;
+  const x=Math.min(Math.max(R,Math.round(nx*wc.width)),wc.width-R-1);
+  const y=Math.min(Math.max(R,Math.round(ny*wc.height)),wc.height-R-1);
+  const d=ctx.getImageData(x-R,y-R,R*2+1,R*2+1).data;
   let r=0,g=0,b=0,n=0;
   for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
   r=Math.round(r/n);g=Math.round(g/n);b=Math.round(b/n);
-  const hex=rgbToHex(r,g,b);
-  an.samples.push({hex,lab:rgbToLab(r,g,b)});
-  if(stage&&px!==undefined){const m=document.createElement("span");m.className="tap-mark";m.style.left=px+"px";m.style.top=py+"px";m.style.background=hex;stage.appendChild(m);}
-  renderSampleRow();
-  const btn=$("#toQuizBtn");
-  if(btn)btn.disabled=an.samples.length<3;
+  return{hex:rgbToHex(r,g,b),lab:rgbToLab(r,g,b)};
 }
 function autoSample(){
-  an.samples=[];$$(".tap-mark").forEach(m=>m.remove());
-  const stage=$("#stage"),r=stage?stage.getBoundingClientRect():{width:0,height:0};
-  [[0.5,0.34],[0.4,0.5],[0.6,0.5]].forEach(([nx,ny])=>samplePoint(nx,ny,nx*r.width,ny*r.height,stage));
+  an.samples=[[0.5,0.34],[0.4,0.5],[0.6,0.5]].map(p=>readPoint(p[0],p[1]));
 }
-function renderSampleRow(){
+function sampleAt(nx,ny,px,py,stage){
+  haptic();
+  an.samples=[nx-0.035,nx,nx+0.035].map(x=>readPoint(x,ny));
+  $$(".tap-mark").forEach(m=>m.remove());
+  if(stage&&px!==undefined){const m=document.createElement("span");m.className="tap-mark";m.style.left=px+"px";m.style.top=py+"px";m.style.background=skinAvg().hex;stage.appendChild(m);}
+  renderSkinChip();
+  const btn=$("#toQuizBtn");if(btn)btn.disabled=false;
+  toast("Skin tone updated ✓");
+}
+function skinAvg(){
+  if(!an.samples.length)return null;
+  const L=an.samples.reduce((s,x)=>s+x.lab.L,0)/an.samples.length;
+  const a=an.samples.reduce((s,x)=>s+x.lab.a,0)/an.samples.length;
+  const b=an.samples.reduce((s,x)=>s+x.lab.b,0)/an.samples.length;
+  const rgb=an.samples.map(s=>hexToRgb(s.hex));
+  const avg=i=>Math.round(rgb.reduce((s,x)=>s+x[i],0)/rgb.length);
+  return{hex:rgbToHex(avg(0),avg(1),avg(2)),lab:{L,a,b}};
+}
+function nearestSkinName(lab){return SKIN_NAMES.reduce((best,s)=>{const d=deltaE(hexLab(s.h),lab);return d<best.d?{d,n:s.n}:best;},{d:1e9,n:""}).n;}
+function renderSkinChip(){
   const el=$("#sampleRow");if(!el)return;
-  el.innerHTML=an.samples.map((s,i)=>`<span class="sample-chip"><i class="dot-sw" style="width:18px;height:18px;background:${s.hex}"></i>${["Forehead","Cheek","Jaw"][i]||"Skin"} ${s.hex}</span>`).join("");
+  const avg=skinAvg();
+  el.innerHTML=avg?`<span class="sample-chip" style="padding:8px 14px">✓ Skin tone detected&nbsp; <i class="dot-sw" style="width:20px;height:20px;background:${avg.hex}"></i>&nbsp;<b>${esc(nearestSkinName(avg.lab))}</b></span>`:"";
 }
 
 /* ---- quiz ---- */
 function renderQuiz(i){
   stopCam();an.step=3;renderSteps();
   const q=QUIZ[i];
-  const backExpr=i>0?`renderQuiz(${i-1})`:(an.method==="quiz"?"startAnalysis()":"renderPhoto(true)");
+  const backExpr=i>0?`renderQuiz(${i-1})`:"renderPhoto(true)";
   $("#anBody").innerHTML=`
    ${flowHeaderHtml("Quick quiz",`Question ${i+1} of ${QUIZ.length} · skip anything you're unsure of`,backExpr)}
    <div class="qz card" style="margin-top:6px">
@@ -864,9 +876,9 @@ function classify(){
   let base;
   if(lab){const h=Math.atan2(lab.b,lab.a)*180/Math.PI;base=h<46?"BLUE":h>56?"YELLOW":"NEUTRAL";}
   else base=Math.abs(tone)<0.8?"NEUTRAL":(warm?"YELLOW":"BLUE");
-  const skinHex=an.samples.length?an.samples[Math.floor(an.samples.length/2)].hex:null;
-  let skinName=null;
-  if(skinHex){const sl=hexLab(skinHex);skinName=SKIN_NAMES.reduce((best,s)=>{const d=deltaE(hexLab(s.h),sl);return d<best.d?{d,n:s.n}:best;},{d:1e9,n:""}).n;}
+  const avg=skinAvg();
+  const skinHex=avg?avg.hex:null;
+  const skinName=avg?nearestSkinName(avg.lab):null;
   const conf=Math.round(Math.min(96,60+Math.abs(tone)*5+Math.abs(clarity)*4+(an.samples.length?10:0)));
   return{season:id,conf,base,skinHex,skinName,faceUrl:an.faceUrl||null,date:new Date().toISOString()};
 }

@@ -1,0 +1,19 @@
+{
+  "name": "PALETA · Personal Color Analysis",
+  "short_name": "PALETA",
+  "description": "Korean-style personal color analysis, lookbooks, outfit planning and palette-matched shopping — made for the Philippines.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F4F0",
+  "theme_color": "#F7F4F0",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231C1B20'/><circle cx='24' cy='24' r='9' fill='%23E0559D'/><circle cx='41' cy='24' r='9' fill='%232D68C4'/><circle cx='24' cy='41' r='9' fill='%2319B6C9'/><circle cx='41' cy='41' r='9' fill='%23F3C53F'/></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

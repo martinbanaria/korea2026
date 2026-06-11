@@ -218,6 +218,45 @@ main{max-width:760px;margin:0 auto;padding:4px 18px 28px}
 .nudge-pop b{font-size:14px;display:block}
 .nudge-pop p{font-size:12.5px;color:var(--ink2);margin:2px 0 0}
 @media (min-width:760px){ .prod-grid{grid-template-columns:repeat(3,1fr)} .look-card{width:200px} }
+
+/* ---------- v1.1: flow, mirror, floating nav ---------- */
+.flowbar{display:flex;align-items:center;gap:11px;margin:2px 0 10px}
+.backbtn{width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;font-size:17px;flex:none}
+.flowbar .ft b{font-size:16px;display:block;line-height:1.2}
+.flowbar .ft span{font-size:11.5px;color:var(--ink2);font-weight:600}
+.check-li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.check-li:last-child{border-bottom:0}
+.check-li .ic{font-size:22px;flex:none;margin-top:1px}
+.check-li b{font-size:14.5px;display:block}
+.check-li span{font-size:12.5px;color:var(--ink2)}
+.cam-controls{position:absolute;bottom:14px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:28px;z-index:3}
+.shutter{width:72px;height:72px;border-radius:50%;background:#fff;border:5px solid rgba(255,255,255,.45);box-shadow:0 8px 24px rgba(0,0,0,.35);transition:transform .1s}
+.shutter:active{transform:scale(.9)}
+.cam-round{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-size:19px;display:grid;place-items:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.quality{display:flex;gap:10px;align-items:center;border-radius:14px;padding:10px 12px;font-size:13px;font-weight:600;margin-top:10px}
+.quality.good{background:#EAF6EE;color:#2E7D43}
+.quality.warn{background:#FCF3E3;color:#9C6B1F}
+.qz .opt.skip{border-style:dashed;color:var(--ink2);font-weight:600}
+.seg{display:flex;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:4px;margin:12px 0 4px;gap:4px}
+.seg button{flex:1;padding:9px 0;border-radius:999px;font-weight:700;font-size:13.5px;color:var(--ink2);transition:all .15s}
+.seg button.on{background:var(--ink);color:#fff}
+.mirror{position:relative;border-radius:22px;aspect-ratio:4/3;display:grid;place-items:center;transition:background .4s ease;overflow:hidden}
+.mirror .drape-face{width:52%}
+.mirror-tag{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.93);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800;box-shadow:var(--shadow)}
+.mirror-sw{display:flex;gap:8px;overflow-x:auto;padding:8px 2px 4px}
+.mirror-sw button{flex:none;width:44px;height:44px;border-radius:14px;border:2.5px solid transparent;transition:all .15s}
+.mirror-sw button.on{border-color:var(--ink);transform:scale(1.08)}
+/* floating pill tab bar */
+body{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.tabbar{left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));height:64px;padding-bottom:0;border-radius:26px;border:1px solid var(--line);box-shadow:0 16px 44px rgba(28,27,32,.18);background:rgba(255,255,255,.95)}
+.tabbar button .ico{transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.tabbar button.on .ico{transform:translateY(-2px) scale(1.14)}
+.tabbar button.on::after{top:8px}
+.fab{bottom:calc(94px + env(safe-area-inset-bottom))}
+.toast{bottom:calc(98px + env(safe-area-inset-bottom))}
+.nudge-pop{bottom:calc(94px + env(safe-area-inset-bottom))}
+.view.active{animation:viewin .34s cubic-bezier(.2,.8,.2,1)}
+@keyframes viewin{from{opacity:0;transform:translateY(16px) scale(.992)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -464,18 +503,11 @@ const QUIZ=[
  {q:"How does your skin react to the sun?",opts:[
    {t:"I redden or burn first",fx:{tone:-1,depth:-0.5}},{t:"I tan agad — golden glow",fx:{tone:1,depth:0.5}},{t:"I tan deep and fast",fx:{depth:1}}]},
  {q:"Your natural hair color is closest to…",opts:[
-   {t:"Soft / light brown",fx:{depth:-1,contrast:-1}},{t:"Dark brown",fx:{depth:0}},{t:"Jet black",fx:{depth:0.5,contrast:1.5}}]},
+   {t:"Soft / light brown",fx:{depth:-1,contrast:-1}},{t:"Dark brown",fx:{depth:0}},{t:"Jet black",fx:{depth:0.5,contrast:1.5}},{t:"Salt & pepper / silver",fx:{tone:-0.5,clarity:-0.5}}]},
  {q:"When you wear very vivid colors near your face…",opts:[
    {t:"My face lights up ✨",fx:{clarity:2}},{t:"The color wears me — overwhelming",fx:{clarity:-2}},{t:"Depends on the color",fx:{clarity:0}}]},
  {q:"Pure white tee vs cream tee — which flatters you more?",opts:[
    {t:"Pure white",fx:{tone:-1}},{t:"Cream / ivory",fx:{tone:1}},{t:"I really can't tell",fx:{tone:0}}]}
-];
-
-const DRAPES=[
- {title:"Which makes your face look brighter?",a:{h:"#FF7757",l:"Warm Coral",fx:{tone:2}},b:{h:"#DD2590",l:"Cool Fuchsia",fx:{tone:-2}}},
- {title:"Which feels more harmonious on you?",a:{h:"#C2A878",l:"Camel",fx:{tone:1.5,clarity:-0.5}},b:{h:"#1E2638",l:"Charcoal Navy",fx:{tone:-1.5,contrast:0.5}}},
- {title:"Which keeps your features defined?",a:{h:"#C98DA4",l:"Dusty Rose",fx:{clarity:-2}},b:{h:"#E0218A",l:"Vivid Magenta",fx:{clarity:2}}},
- {title:"And against your skin — which white wins?",a:{h:"#F7EBD8",l:"Ivory",fx:{tone:1,depth:-0.5}},b:{h:"#FFFFFF",l:"Pure White",fx:{tone:-1,contrast:0.5}}}
 ];
 
 /* look templates: slots reference [kind,index] — p=palette, m=mains, b=basics */
@@ -527,7 +559,7 @@ const COMMUNITY=[
 
 const TUT_SLIDES=[
  {ico:"🎨",title:"Welcome to PALETA",body:"Korean-style personal color analysis — the same 9-tone system used in Seoul studios — now in your pocket."},
- {ico:"📸",title:"Find your true colors",body:"Take a selfie in daylight, answer 6 quick questions, then do a virtual drape test. We blend all three for your result."},
+ {ico:"📸",title:"Find your true colors",body:"A guided selfie with prep checklist + automatic lighting check, plus 6 quick questions — skip any you are unsure of. We do all the judging; you never have to pick colors."},
  {ico:"📋",title:"Get your full report",body:"Best palette, makeup shades, metals, patterns, hair colors — plus your second-best and worst tones, just like the studio report."},
  {ico:"👗",title:"Style it, plan it, shop it",body:"Browse lookbooks in your palette, plan a week of outfits, and shop items scored against your exact colors."},
  {ico:"✨",title:"Meet your AI Stylist",body:"Ask anything — \"what do I wear to a wedding?\" — and get answers tuned to your personal palette. Tap the ✨ button anytime."}
@@ -570,7 +602,7 @@ function go(v){
   $("#view-"+v).classList.add("active");
   $$("#tabbar button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
   window.scrollTo({top:0});
-  stopCam();
+  stopCam();mirrorStop();haptic(6);
   if(v==="home")renderHome();
   if(v==="analyze"&&an.step===0)startAnalysis();
   if(v==="report")renderReport();
@@ -621,82 +653,139 @@ function renderHome(){
 }
 
 /* ============ ANALYZE FLOW ============ */
+function haptic(ms){try{if(navigator.vibrate)navigator.vibrate(ms||8)}catch(e){}}
+function flowHeaderHtml(title,sub,backExpr){
+  return `<div class="flowbar"><button class="backbtn" onclick="haptic();${backExpr}">←</button><div class="ft"><b>${title}</b><span>${sub}</span></div></div>`;
+}
 function startAnalysis(){
-  Object.assign(an,{step:0,method:null,samples:[],quiz:[],drape:[],faceUrl:null});
+  stopCam();
+  Object.assign(an,{step:0,method:null,samples:[],quiz:[],faceUrl:null,captured:false,facing:"user"});
   renderSteps();
   $("#anRestart").style.display="none";
   $("#anTitle").textContent="Color Analysis";
   $("#anBody").innerHTML=`
-   <p class="muted" style="margin:0 2px 6px">Three quick stages — photo, quiz, virtual drapes — blended into one result, just like an in-person session.</p>
-   <button class="method" onclick="chooseMethod('camera')"><span class="ico">🤳</span><div><b>Take a selfie</b><p class="muted">Best accuracy. Use daylight, no makeup if possible, face the window.</p></div></button>
-   <button class="method" onclick="chooseMethod('upload')"><span class="ico">🖼️</span><div><b>Upload a photo</b><p class="muted">A recent bare-face photo in natural light works great.</p></div></button>
-   <button class="method" onclick="chooseMethod('quiz')"><span class="ico">📝</span><div><b>Skip photo — quiz only</b><p class="muted">No camera needed. Slightly less precise, still very good.</p></div></button>
-   <div class="card flat"><p class="muted" style="margin:0">💡 <b>Pro tip:</b> indirect daylight near a window, no filters, hair pulled back. Avoid yellow indoor bulbs — they trick every color system, even the Korean machines.</p></div>`;
+   <p class="muted" style="margin:0 2px 6px">Photo + a short quiz — <b>we do all the judging for you</b>, just like the studio. No fashion knowledge needed.</p>
+   <button class="method" onclick="haptic();chooseMethod('camera')"><span class="ico">🤳</span><div><b>Take a selfie</b><p class="muted">Best accuracy. We'll walk you through a quick prep checklist first.</p></div></button>
+   <button class="method" onclick="haptic();chooseMethod('upload')"><span class="ico">🖼️</span><div><b>Upload a photo</b><p class="muted">A recent bare-face photo in natural light works great.</p></div></button>
+   <button class="method" onclick="haptic();chooseMethod('quiz')"><span class="ico">📝</span><div><b>Skip photo — quiz only</b><p class="muted">No camera needed. Slightly less precise, still very good.</p></div></button>`;
 }
 function renderSteps(){
-  const total=5;
-  $("#anSteps").innerHTML=Array.from({length:total},(_,i)=>`<i class="${i<=an.step?"on":""}"></i>`).join("");
+  $("#anSteps").innerHTML=Array.from({length:4},(_,i)=>`<i class="${i<=an.step?"on":""}"></i>`).join("");
 }
 function chooseMethod(m){
-  an.method=m;an.step=1;renderSteps();
+  an.method=m;
   $("#anRestart").style.display="inline-flex";
-  if(m==="quiz"){an.step=2;renderSteps();renderQuiz(0);return;}
-  $("#anTitle").textContent="Step 1 · Photo";
+  if(m==="quiz"){renderQuiz(0);return;}
+  renderPrep();
+}
+function renderPrep(){
+  stopCam();an.step=1;renderSteps();
   $("#anBody").innerHTML=`
-    <div class="photo-stage" id="stage">
-      <video id="cam" autoplay playsinline muted class="hidden"></video>
-      <div class="face-guide" id="faceGuide"><div class="oval"></div></div>
-    </div>
-    <div class="sample-row" id="sampleRow"></div>
-    <div id="photoControls" style="margin-top:12px"></div>
-    <input type="file" id="fileIn" accept="image/*" class="hidden">`;
-  if(m==="camera")initCamera();
-  else{
-    const fi=$("#fileIn");
-    fi.onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{drawToWork(img);URL.revokeObjectURL(img.src);};img.src=URL.createObjectURL(f);};
-    $("#photoControls").innerHTML=`<button class="btn primary" onclick="$('#fileIn').click()">🖼️ Choose photo</button>`;
-    fi.click();
-  }
+   ${flowHeaderHtml("Before your photo","30-second prep = studio-grade accuracy","startAnalysis()")}
+   <div class="card" style="margin-top:6px">
+     <div class="check-li"><span class="ic">☀️</span><div><b>Neutral white light</b><span>Daylight facing a window is perfect. Yellow bulbs, ring-light filters and colored signs fool every analyzer — even the Korean machines.</span></div></div>
+     <div class="check-li"><span class="ic">🧼</span><div><b>Bare skin if possible</b><span>Remove or minimize foundation, blush and lip color.</span></div></div>
+     <div class="check-li"><span class="ic">💇</span><div><b>Hair off the face</b><span>Cheeks, jaw and forehead should be visible.</span></div></div>
+     <div class="check-li"><span class="ic">👓</span><div><b>No glasses, no filters</b><span>Beauty filters and tinted lenses shift your real tones.</span></div></div>
+     <div class="check-li"><span class="ic">⬜</span><div><b>Plain background</b><span>A white or grey wall behind you helps.</span></div></div>
+   </div>
+   <button class="btn accent" onclick="haptic();renderPhoto()">I'm ready 📸</button>
+   <button class="btn ghost" style="margin-top:8px" onclick="haptic();an.method='quiz';renderQuiz(0)">Skip photo — quiz only</button>
+   <p class="muted" style="text-align:center;margin-top:10px">Don't worry — we check your lighting automatically after the shot.</p>`;
+}
+function renderPhoto(restore){
+  an.step=2;renderSteps();
+  $("#anBody").innerHTML=`
+   ${flowHeaderHtml("Your photo","Center your face in the oval","renderPrep()")}
+   <div class="photo-stage" id="stage">
+     <video id="cam" autoplay playsinline muted class="hidden"></video>
+     <div class="face-guide" id="faceGuide"><div class="oval"></div></div>
+     <div class="cam-controls" id="camControls"></div>
+   </div>
+   <div id="quality"></div>
+   <div class="sample-row" id="sampleRow"></div>
+   <div id="photoControls" style="margin-top:12px"></div>
+   <input type="file" id="fileIn" accept="image/*" class="hidden">`;
+  const fi=$("#fileIn");
+  fi.onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{drawToWork(img);URL.revokeObjectURL(img.src);};img.src=URL.createObjectURL(f);};
+  if(restore&&an.captured){afterCapture(true);return;}
+  if(an.method==="camera")initCamera();
+  else $("#photoControls").innerHTML=`<button class="btn primary" onclick="haptic();$('#fileIn').click()">🖼️ Choose photo</button>`;
 }
 async function initCamera(){
+  stopCam();
   try{
-    an.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:1080}}});
+    an.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:an.facing,width:{ideal:1280}}});
     const v=$("#cam");v.srcObject=an.stream;v.classList.remove("hidden");
-    $("#photoControls").innerHTML=`<button class="btn primary" onclick="capture()">📸 Capture</button>`;
+    v.style.transform=an.facing==="user"?"scaleX(-1)":"";
+    $("#camControls").innerHTML=`
+      <button class="cam-round" onclick="haptic();$('#fileIn').click()" aria-label="Upload instead">🖼️</button>
+      <button class="shutter" onclick="haptic(14);capture()" aria-label="Take photo"></button>
+      <button class="cam-round" onclick="haptic();an.facing=an.facing==='user'?'environment':'user';initCamera()" aria-label="Flip camera">🔄</button>`;
+    $("#photoControls").innerHTML=`<p class="muted" style="text-align:center;margin:4px 0 0">Face the light, fill the oval, tap the shutter.</p>`;
   }catch(e){
     toast("Camera unavailable — upload a photo instead");
-    chooseMethod("upload");
+    an.method="upload";
+    $("#photoControls").innerHTML=`<button class="btn primary" onclick="haptic();$('#fileIn').click()">🖼️ Choose photo</button>`;
   }
 }
 function stopCam(){if(an.stream){an.stream.getTracks().forEach(t=>t.stop());an.stream=null;}}
-function capture(){const v=$("#cam");drawToWork(v,v.videoWidth,v.videoHeight,true);stopCam();}
-function drawToWork(src,sw,sh,mirror){
+function capture(){const v=$("#cam");drawToWork(v,v.videoWidth,v.videoHeight,an.facing==="user");stopCam();}
+function drawToWork(src,sw,sh,mirrorImg){
   sw=sw||src.naturalWidth;sh=sh||src.naturalHeight;
   const W=720,H=960,wc=$("#workCanvas");wc.width=W;wc.height=H;
   const ctx=wc.getContext("2d");
   const scale=Math.max(W/sw,H/sh),cw=W/scale,ch=H/scale,cx=(sw-cw)/2,cy=(sh-ch)/2;
   ctx.save();
-  if(mirror){ctx.translate(W,0);ctx.scale(-1,1);}
+  if(mirrorImg){ctx.translate(W,0);ctx.scale(-1,1);}
   ctx.drawImage(src,cx,cy,cw,ch,0,0,W,H);
   ctx.restore();
-  const stage=$("#stage");
-  stage.querySelector("video")?.classList.add("hidden");
-  let disp=stage.querySelector("canvas.disp");
-  if(!disp){disp=document.createElement("canvas");disp.className="disp";stage.prepend(disp);}
-  disp.width=W;disp.height=H;disp.getContext("2d").drawImage(wc,0,0);
-  $("#faceGuide").innerHTML="";
-  an.samples=[];renderSampleRow();
-  disp.onclick=e=>{const r=disp.getBoundingClientRect();samplePoint((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height,e.clientX-r.left,e.clientY-r.top,stage);};
+  an.captured=true;
   const fc=document.createElement("canvas");fc.width=fc.height=360;
   fc.getContext("2d").drawImage(wc,W*0.22,H*0.16,W*0.56,W*0.56,0,0,360,360);
-  an.faceUrl=fc.toDataURL("image/jpeg",0.85);
-  $("#photoControls").innerHTML=`
-    <p class="muted" style="margin:4px 2px 10px">👆 Tap <b>3 spots of bare skin</b> — forehead, cheek, jawline. Avoid shadows, blush and hairline.</p>
-    <div class="row">
-      <button class="btn ghost" style="flex:1" onclick="autoSample()">✨ Auto-detect</button>
-      <button class="btn primary" style="flex:1" id="toQuizBtn" disabled onclick="an.step=2;renderSteps();renderQuiz(0)">Next →</button>
-    </div>`;
+  an.faceUrl=fc.toDataURL("image/jpeg",0.82);
+  afterCapture(false);
 }
+function lightingCheck(){
+  const wc=$("#workCanvas"),ctx=wc.getContext("2d");
+  const d=ctx.getImageData(Math.round(wc.width*0.3),Math.round(wc.height*0.18),Math.round(wc.width*0.4),Math.round(wc.height*0.4)).data;
+  let r=0,g=0,b=0,n=0,clip=0;
+  for(let i=0;i<d.length;i+=16){r+=d[i];g+=d[i+1];b+=d[i+2];if(d[i]>250&&d[i+1]>250)clip++;n++;}
+  r/=n;g/=n;b/=n;
+  const lab=rgbToLab(r,g,b),issues=[];
+  if(lab.L<40)issues.push("Photo looks dark — face a window or white light, then retake");
+  else if(lab.L>90||clip/n>0.3)issues.push("Overexposed — step back from direct light and retake");
+  if(lab.b>30)issues.push("Yellow light cast detected — warm bulbs skew results; retake near daylight");
+  else if(lab.b<1)issues.push("Blue/cool cast detected — avoid screen or colored lighting");
+  return issues;
+}
+function afterCapture(restore){
+  const wc=$("#workCanvas"),stage=$("#stage");
+  const v=stage.querySelector("video");if(v)v.classList.add("hidden");
+  $("#camControls").innerHTML="";
+  let disp=stage.querySelector("canvas.disp");
+  if(!disp){disp=document.createElement("canvas");disp.className="disp";stage.prepend(disp);}
+  disp.width=wc.width;disp.height=wc.height;disp.getContext("2d").drawImage(wc,0,0);
+  $("#faceGuide").innerHTML="";
+  disp.onclick=e=>{
+    if(an.samples.length>=3){an.samples=[];$$(".tap-mark").forEach(m=>m.remove());renderSampleRow();}
+    const r=disp.getBoundingClientRect();
+    samplePoint((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height,e.clientX-r.left,e.clientY-r.top,stage);
+  };
+  const issues=lightingCheck();
+  $("#quality").innerHTML=issues.length
+    ?`<div class="quality warn">⚠️ <span>${esc(issues[0])}</span></div>`
+    :`<div class="quality good">✓ Lighting looks good</div>`;
+  if(!restore){an.samples=[];$$(".tap-mark").forEach(m=>m.remove());autoSample();}
+  renderSampleRow();
+  $("#photoControls").innerHTML=`
+   <div class="row">
+     <button class="btn ghost" style="flex:1" onclick="haptic();retakePhoto()">↺ Retake</button>
+     <button class="btn primary" style="flex:1" id="toQuizBtn" ${an.samples.length>=3?"":"disabled"} onclick="haptic();renderQuiz(0)">Looks good →</button>
+   </div>
+   <p class="muted" style="margin:8px 2px 0">We auto-picked 3 skin points for you. Tap the photo to choose your own (avoid shadows, blush, hairline).</p>`;
+}
+function retakePhoto(){an.samples=[];an.captured=false;an.faceUrl=null;renderPhoto();}
 function samplePoint(nx,ny,px,py,stage){
   if(an.samples.length>=3)return;
   const wc=$("#workCanvas"),ctx=wc.getContext("2d");
@@ -709,54 +798,37 @@ function samplePoint(nx,ny,px,py,stage){
   an.samples.push({hex,lab:rgbToLab(r,g,b)});
   if(stage&&px!==undefined){const m=document.createElement("span");m.className="tap-mark";m.style.left=px+"px";m.style.top=py+"px";m.style.background=hex;stage.appendChild(m);}
   renderSampleRow();
-  if(an.samples.length>=3){const btn=$("#toQuizBtn");if(btn)btn.disabled=false;toast("Skin sampled ✓ — tap Next");}
+  const btn=$("#toQuizBtn");
+  if(btn)btn.disabled=an.samples.length<3;
 }
 function autoSample(){
   an.samples=[];$$(".tap-mark").forEach(m=>m.remove());
-  const stage=$("#stage"),r=stage.getBoundingClientRect();
+  const stage=$("#stage"),r=stage?stage.getBoundingClientRect():{width:0,height:0};
   [[0.5,0.34],[0.4,0.5],[0.6,0.5]].forEach(([nx,ny])=>samplePoint(nx,ny,nx*r.width,ny*r.height,stage));
 }
 function renderSampleRow(){
-  $("#sampleRow").innerHTML=an.samples.map((s,i)=>`<span class="sample-chip"><i class="dot-sw" style="width:18px;height:18px;background:${s.hex}"></i>${["Forehead","Cheek","Jaw"][i]||"Skin"} ${s.hex}</span>`).join("")
-   +(an.samples.length?`<button class="sample-chip" onclick="an.samples=[];$$('.tap-mark').forEach(m=>m.remove());renderSampleRow();const b=$('#toQuizBtn');if(b)b.disabled=true;">↺ Reset</button>`:"");
+  const el=$("#sampleRow");if(!el)return;
+  el.innerHTML=an.samples.map((s,i)=>`<span class="sample-chip"><i class="dot-sw" style="width:18px;height:18px;background:${s.hex}"></i>${["Forehead","Cheek","Jaw"][i]||"Skin"} ${s.hex}</span>`).join("");
 }
 
 /* ---- quiz ---- */
 function renderQuiz(i){
-  stopCam();
-  $("#anTitle").textContent=`Step 2 · Quiz ${i+1}/${QUIZ.length}`;
+  stopCam();an.step=3;renderSteps();
   const q=QUIZ[i];
-  $("#anBody").innerHTML=`<div class="qz card">
+  const backExpr=i>0?`renderQuiz(${i-1})`:(an.method==="quiz"?"startAnalysis()":"renderPhoto(true)");
+  $("#anBody").innerHTML=`
+   ${flowHeaderHtml("Quick quiz",`Question ${i+1} of ${QUIZ.length} · skip anything you're unsure of`,backExpr)}
+   <div class="qz card" style="margin-top:6px">
     <h3 style="font-size:18px;margin-bottom:8px">${esc(q.q)}</h3>
-    ${q.opts.map((o,j)=>`<button class="opt" onclick="answerQuiz(${i},${j})">${esc(o.t)}</button>`).join("")}
-  </div>`;
+    ${q.opts.map((o,j)=>`<button class="opt ${an.quiz[i]===q.opts[j].fx?"sel":""}" onclick="answerQuiz(${i},${j})">${esc(o.t)}</button>`).join("")}
+    <button class="opt skip" onclick="answerQuiz(${i},-1)">🤷 Not sure / doesn't apply — skip</button>
+   </div>`;
 }
 function answerQuiz(i,j){
-  an.quiz[i]=QUIZ[i].opts[j].fx;
+  haptic();
+  an.quiz[i]=j<0?{}:QUIZ[i].opts[j].fx;
   if(i+1<QUIZ.length)renderQuiz(i+1);
-  else{an.step=3;renderSteps();renderDrape(0);}
-}
-
-/* ---- virtual draping ---- */
-function renderDrape(i){
-  $("#anTitle").textContent=`Step 3 · Drape Test ${i+1}/${DRAPES.length}`;
-  const d=DRAPES[i];
-  const face=an.faceUrl?`background-image:url(${an.faceUrl})`:`background:${an.samples[0]?an.samples[0].hex:"#D9B8A5"}`;
-  $("#anBody").innerHTML=`
-   <p class="muted" style="margin:0 2px 10px">Imagine this color held under your chin — like the fabric drapes at the studio. <b>${esc(d.title)}</b></p>
-   <div class="drape-stage" id="drapeStage" style="background:${d.a.h}">
-     <div class="drape-face" style="${face};background-size:cover;background-position:center"></div>
-   </div>
-   <div class="drape-pick">
-     <button class="btn ghost" onmouseenter="$('#drapeStage').style.background='${d.a.h}'" ontouchstart="$('#drapeStage').style.background='${d.a.h}'" onclick="pickDrape(${i},'a')"><i class="dot-sw" style="background:${d.a.h}"></i>${esc(d.a.l)}</button>
-     <button class="btn ghost" onmouseenter="$('#drapeStage').style.background='${d.b.h}'" ontouchstart="$('#drapeStage').style.background='${d.b.h}'" onclick="pickDrape(${i},'b')"><i class="dot-sw" style="background:${d.b.h}"></i>${esc(d.b.l)}</button>
-   </div>
-   <p class="muted" style="text-align:center;margin-top:10px">Tap each swatch to preview, choose the one that flatters more.</p>`;
-}
-function pickDrape(i,side){
-  an.drape[i]=DRAPES[i][side].fx;
-  if(i+1<DRAPES.length)renderDrape(i+1);
-  else{an.step=4;renderSteps();runAnalysis();}
+  else runAnalysis();
 }
 
 /* ---- scoring ---- */
@@ -769,12 +841,12 @@ function classify(){
     const b=an.samples.reduce((s,x)=>s+x.lab.b,0)/an.samples.length;
     lab={L,a,b};
     const h=Math.atan2(b,a)*180/Math.PI;
-    tone+=Math.max(-2.5,Math.min(2.5,(h-52)/6))*1.2;
+    tone+=Math.max(-2.5,Math.min(2.5,(h-52)/6))*1.4;
     depth+=Math.max(-2,Math.min(2,(62-L)/8));
   }
-  for(const fx of [...an.quiz,...an.drape]){
+  for(const fx of an.quiz){
     if(!fx)continue;
-    tone+=fx.tone||0;depth+=fx.depth||0;clarity+=fx.clarity||0;contrast+=fx.contrast||0;
+    tone+=(fx.tone||0)*1.1;depth+=fx.depth||0;clarity+=(fx.clarity||0)*1.4;contrast+=(fx.contrast||0)*1.4;
   }
   const warm=tone>=0;
   let id;
@@ -795,16 +867,15 @@ function classify(){
   const skinHex=an.samples.length?an.samples[Math.floor(an.samples.length/2)].hex:null;
   let skinName=null;
   if(skinHex){const sl=hexLab(skinHex);skinName=SKIN_NAMES.reduce((best,s)=>{const d=deltaE(hexLab(s.h),sl);return d<best.d?{d,n:s.n}:best;},{d:1e9,n:""}).n;}
-  const conf=Math.round(Math.min(96,62+Math.abs(tone)*5+Math.abs(clarity)*4+(an.samples.length?8:0)));
-  return{season:id,conf,base,skinHex,skinName,contrastScore:contrast,date:new Date().toISOString()};
+  const conf=Math.round(Math.min(96,60+Math.abs(tone)*5+Math.abs(clarity)*4+(an.samples.length?10:0)));
+  return{season:id,conf,base,skinHex,skinName,faceUrl:an.faceUrl||null,date:new Date().toISOString()};
 }
 function runAnalysis(){
-  $("#anTitle").textContent="Analyzing…";
   $("#anBody").innerHTML=`<div class="analyzing card">
     <div class="ring" id="anRing"></div>
     <h3 id="anMsg">Reading your undertone…</h3>
     <p class="muted" id="anSub">Lab color space conversion</p></div>`;
-  const msgs=[["Reading your undertone…","Lab color space conversion"],["Measuring depth & clarity…","Lightness and chroma axes"],["Cross-checking quiz + drapes…","Weighted tone scoring"],["Matching against 9 Korean tones…","PCCS tone mapping"],["Building your report…","Palette, makeup, metals, hair"]];
+  const msgs=[["Reading your undertone…","Lab color space conversion"],["Measuring depth & clarity…","Lightness and chroma axes"],["Weighing your quiz signals…","Tone · depth · clarity · contrast"],["Matching against 9 Korean tones…","PCCS tone mapping"],["Building your report…","Palette, chips, makeup, metals, hair"]];
   let p=0;
   const iv=setInterval(()=>{
     p++;
@@ -815,8 +886,8 @@ function runAnalysis(){
       const res=classify();
       profile=Object.assign(profile||{},res);
       LS("profile",profile);
-      an.step=5;
-      setTimeout(()=>{go("report");toast("✨ Analysis complete!");maybeNudge("report",true);},400);
+      an.step=4;
+      setTimeout(()=>{haptic(20);go("report");toast("✨ Analysis complete!");maybeNudge("report",true);},400);
     }
   },650);
 }
@@ -842,6 +913,17 @@ function renderReport(){
   </div>
 
   <div class="card"><p class="eyebrow">CHARACTER</p><p style="margin:8px 0 0;font-size:14.5px">${esc(s.character)}</p></div>
+
+  <div class="card"><p class="eyebrow">VIRTUAL DRAPE MIRROR</p>
+    <p class="muted" style="margin:4px 0 8px">No guessing — flip between your best &amp; avoid colors and watch your face react, like the fabric drapes in-studio.</p>
+    <div class="mirror" id="mirror"><div class="drape-face" style="${profile.faceUrl?`background-image:url(${profile.faceUrl});background-size:cover;background-position:center`:`background:${profile.skinHex||"#D9B8A5"}`}"></div><span class="mirror-tag" id="mirrorTag"></span></div>
+    <div class="seg" id="mirrorSeg">
+      <button data-m="best" onclick="mirrorMode(&#39;best&#39;)">✓ Best</button>
+      <button data-m="avoid" onclick="mirrorMode(&#39;avoid&#39;)">✗ Avoid</button>
+      <button data-m="play" id="mirrorPlayBtn" onclick="mirrorPlay()">▶ Compare</button>
+    </div>
+    <div class="mirror-sw" id="mirrorSw"></div>
+  </div>
 
   <div class="card"><p class="eyebrow">BEST PALETTE</p>
     <div class="swatch-grid">${s.palette.map(h=>`<i class="swatch" style="background:${h}" title="${h}"></i>`).join("")}</div>
@@ -904,9 +986,44 @@ function renderReport(){
     <button class="btn ghost" style="flex:1" onclick="go('planner')">🗓️ Plan outfits</button>
   </div>
   <p class="muted" style="text-align:center;margin-top:14px">Analyzed ${new Date(profile.date).toLocaleDateString()} · PALETA POC · inspired by Korean studio reports</p>`;
+  mirrorInit();
+}
+
+/* ---- virtual drape mirror ---- */
+let mirror={mode:"best",idx:0,timer:null};
+function mirrorColors(){
+  const s=season();if(!s)return[];
+  return mirror.mode==="best"?s.chips:SEASONS[s.worst].chips;
+}
+function mirrorInit(){mirror={mode:"best",idx:0,timer:null};mirrorUpdate();}
+function mirrorUpdate(){
+  const m=$("#mirror");if(!m)return;
+  const cols=mirrorColors(),c=cols[mirror.idx%cols.length];
+  m.style.background=c.h;
+  const tag=$("#mirrorTag");
+  tag.textContent=(mirror.mode==="best"?"✓ BEST · ":"✗ AVOID · ")+c.n;
+  tag.style.color=mirror.mode==="best"?"#2E7D43":"#B3382C";
+  $("#mirrorSw").innerHTML=cols.map((x,i)=>`<button class="${i===mirror.idx%cols.length?"on":""}" style="background:${x.h}" aria-label="${esc(x.n)}" onclick="haptic();mirrorStop();mirror.idx=${i};mirrorUpdate()"></button>`).join("");
+  $$("#mirrorSeg button").forEach(b=>{if(b.dataset.m!=="play")b.classList.toggle("on",b.dataset.m===mirror.mode);});
+}
+function mirrorMode(md){haptic();mirrorStop();mirror.mode=md;mirror.idx=0;mirrorUpdate();}
+function mirrorPlay(){
+  haptic();
+  if(mirror.timer){mirrorStop();return;}
+  $("#mirrorPlayBtn").classList.add("on");
+  mirror.timer=setInterval(()=>{
+    mirror.mode=mirror.mode==="best"?"avoid":"best";
+    if(mirror.mode==="best")mirror.idx++;
+    mirrorUpdate();
+  },950);
+}
+function mirrorStop(){
+  if(mirror.timer){clearInterval(mirror.timer);mirror.timer=null;}
+  const b=$("#mirrorPlayBtn");if(b)b.classList.remove("on");
 }
 
 /* ---- share card ---- */
+
 function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 async function shareCard(){
   if(!profile){go("analyze");return;}

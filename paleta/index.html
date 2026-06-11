@@ -661,7 +661,7 @@ function flowHeaderHtml(title,sub,backExpr){
 }
 function startAnalysis(){
   stopCam();
-  Object.assign(an,{step:0,method:null,samples:[],quiz:[],faceUrl:null,captured:false,facing:"user"});
+  Object.assign(an,{step:0,method:null,samples:[],quiz:[],faceUrl:null,captured:false,facing:"user",white:null,calMode:false});
   renderSteps();
   $("#anRestart").style.display="none";
   $("#anTitle").textContent="Color Analysis";
@@ -769,7 +769,14 @@ function afterCapture(restore){
   $("#faceGuide").innerHTML="";
   disp.onclick=e=>{
     const r=disp.getBoundingClientRect();
-    sampleAt((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height,e.clientX-r.left,e.clientY-r.top,stage);
+    const nx=(e.clientX-r.left)/r.width,ny=(e.clientY-r.top)/r.height;
+    if(an.calMode){
+      an.white=readPoint(nx,ny);an.calMode=false;
+      const cb=$("#calBtn");if(cb){cb.textContent="🎯 Lighting calibrated ✓";cb.style.color="#2E7D43";}
+      renderSkinChip();haptic(14);toast("Lighting calibrated ✓ — undertone reading corrected");
+      return;
+    }
+    sampleAt(nx,ny,e.clientX-r.left,e.clientY-r.top,stage);
   };
   const issues=lightingCheck();
   $("#quality").innerHTML=issues.length
@@ -782,9 +789,21 @@ function afterCapture(restore){
      <button class="btn ghost" style="flex:1" onclick="haptic();retakePhoto()">↺ Retake</button>
      <button class="btn primary" style="flex:1" id="toQuizBtn" ${an.samples.length?"":"disabled"} onclick="haptic();renderQuiz(0)">Looks good →</button>
    </div>
-   <p class="muted" style="margin:8px 2px 0">If the detected shade looks off (shadow, hair, makeup), tap a clear patch of your <b>cheek</b> on the photo and we'll re-read it.</p>`;
+   <button class="btn ghost" id="calBtn" style="margin-top:8px;${an.white?"color:#2E7D43":""}" onclick="armWhiteCal()">${an.white?"🎯 Lighting calibrated ✓":"🎯 Boost accuracy: calibrate with something white"}</button>
+   <p class="muted" style="margin:8px 2px 0">If the detected shade looks off (shadow, hair, makeup), tap a clear patch of your <b>cheek</b> to re-read it. For studio-level accuracy, calibrate using <b>anything pure white</b> in frame — paper, shirt, wall.</p>`;
 }
-function retakePhoto(){an.samples=[];an.captured=false;an.faceUrl=null;renderPhoto();}
+function retakePhoto(){an.samples=[];an.captured=false;an.faceUrl=null;an.white=null;an.calMode=false;renderPhoto();}
+function armWhiteCal(){
+  haptic();an.calMode=true;
+  const cb=$("#calBtn");if(cb)cb.textContent="🎯 Now tap the white thing in your photo…";
+  toast("Tap something pure white in your photo");
+}
+function skinCorrected(){
+  const avg=skinAvg();if(!avg)return null;
+  if(!an.white)return avg.lab;
+  const w=an.white.lab;
+  return{L:Math.max(20,Math.min(85,avg.lab.L+(93-w.L)*0.6)),a:avg.lab.a-w.a,b:avg.lab.b-w.b};
+}
 function readPoint(nx,ny){
   const wc=$("#workCanvas"),ctx=wc.getContext("2d"),R=7;
   const x=Math.min(Math.max(R,Math.round(nx*wc.width)),wc.width-R-1);
@@ -820,7 +839,7 @@ function nearestSkinName(lab){return SKIN_NAMES.reduce((best,s)=>{const d=deltaE
 function renderSkinChip(){
   const el=$("#sampleRow");if(!el)return;
   const avg=skinAvg();
-  el.innerHTML=avg?`<span class="sample-chip" style="padding:8px 14px">✓ Skin tone detected&nbsp; <i class="dot-sw" style="width:20px;height:20px;background:${avg.hex}"></i>&nbsp;<b>${esc(nearestSkinName(avg.lab))}</b></span>`:"";
+  el.innerHTML=avg?`<span class="sample-chip" style="padding:8px 14px">✓ Skin tone detected&nbsp; <i class="dot-sw" style="width:20px;height:20px;background:${avg.hex}"></i>&nbsp;<b>${esc(nearestSkinName(skinCorrected()))}</b></span>`:"";
 }
 
 /* ---- quiz ---- */
@@ -848,17 +867,15 @@ function classify(){
   let tone=0,depth=0,clarity=0,contrast=0;
   let lab=null;
   if(an.samples.length){
-    const L=an.samples.reduce((s,x)=>s+x.lab.L,0)/an.samples.length;
-    const a=an.samples.reduce((s,x)=>s+x.lab.a,0)/an.samples.length;
-    const b=an.samples.reduce((s,x)=>s+x.lab.b,0)/an.samples.length;
-    lab={L,a,b};
-    const h=Math.atan2(b,a)*180/Math.PI;
-    tone+=Math.max(-2.5,Math.min(2.5,(h-52)/6))*1.4;
-    depth+=Math.max(-2,Math.min(2,(62-L)/8));
+    lab=skinCorrected();
+    const hh=Math.atan2(lab.b,lab.a)*180/Math.PI;
+    const wPhoto=an.white?1.6:0.7; // uncalibrated phone photos lie about undertone — trust the quiz more
+    tone+=Math.max(-2.5,Math.min(2.5,(hh-57)/6))*wPhoto;
+    depth+=Math.max(-2,Math.min(2,(62-lab.L)/8));
   }
   for(const fx of an.quiz){
     if(!fx)continue;
-    tone+=(fx.tone||0)*1.1;depth+=fx.depth||0;clarity+=(fx.clarity||0)*1.4;contrast+=(fx.contrast||0)*1.4;
+    tone+=(fx.tone||0)*1.3;depth+=fx.depth||0;clarity+=(fx.clarity||0)*1.4;contrast+=(fx.contrast||0)*1.4;
   }
   const warm=tone>=0;
   let id;
@@ -874,13 +891,13 @@ function classify(){
     else id="summer-mute";
   }
   let base;
-  if(lab){const h=Math.atan2(lab.b,lab.a)*180/Math.PI;base=h<46?"BLUE":h>56?"YELLOW":"NEUTRAL";}
+  if(lab){const hh=Math.atan2(lab.b,lab.a)*180/Math.PI;base=hh<53?"BLUE":hh>61?"YELLOW":"NEUTRAL";}
   else base=Math.abs(tone)<0.8?"NEUTRAL":(warm?"YELLOW":"BLUE");
   const avg=skinAvg();
   const skinHex=avg?avg.hex:null;
-  const skinName=avg?nearestSkinName(avg.lab):null;
-  const conf=Math.round(Math.min(96,60+Math.abs(tone)*5+Math.abs(clarity)*4+(an.samples.length?10:0)));
-  return{season:id,conf,base,skinHex,skinName,faceUrl:an.faceUrl||null,date:new Date().toISOString()};
+  const skinName=avg?nearestSkinName(skinCorrected()):null;
+  const conf=Math.round(Math.min(96,58+Math.abs(tone)*5+Math.abs(clarity)*4+(an.samples.length?8:0)+(an.white?8:0)));
+  return{season:id,conf,base,skinHex,skinName,faceUrl:an.faceUrl||null,calibrated:!!an.white,manual:false,date:new Date().toISOString()};
 }
 function runAnalysis(){
   $("#anBody").innerHTML=`<div class="analyzing card">
@@ -997,7 +1014,7 @@ function renderReport(){
     <button class="btn ghost" style="flex:1" onclick="go('analyze');startAnalysis()">↺ Retake</button>
     <button class="btn ghost" style="flex:1" onclick="go('planner')">🗓️ Plan outfits</button>
   </div>
-  <p class="muted" style="text-align:center;margin-top:14px">Analyzed ${new Date(profile.date).toLocaleDateString()} · PALETA POC · inspired by Korean studio reports</p>`;
+  <p class="muted" style="text-align:center;margin-top:14px">${profile.manual?"Set from your professional analysis":(profile.calibrated?"Light-calibrated 🎯 · ":"")+"Analyzed "+new Date(profile.date).toLocaleDateString()} · PALETA POC · inspired by Korean studio reports</p>`;
   mirrorInit();
 }
 
@@ -1327,6 +1344,14 @@ function openProfile(){
    <p class="eyebrow" style="margin-top:12px">YOUR NAME</p>
    <input id="nameIn" value="${profile&&profile.name?esc(profile.name):""}" placeholder="e.g. Martin" style="width:100%;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:6px 0 14px;background:#fff;outline:none">
    ${profile?`<div class="card flat" style="margin:0 0 14px"><div class="row between"><div><b>${SEASONS[profile.season].name}</b><p class="muted" style="margin:0">${profile.base} base · ${profile.conf}% confidence</p></div><div class="row" style="gap:4px">${SEASONS[profile.season].mains.map(m=>`<i class="dot-sw" style="background:${m.h}"></i>`).join("")}</div></div></div>`:""}
+   <p class="eyebrow">HAD A PRO ANALYSIS? SET YOUR KNOWN TONE</p>
+   <div class="row" style="margin:6px 0 14px">
+     <select id="knownTone" style="flex:1;border:1.5px solid var(--line);border-radius:14px;padding:12px;background:#fff">
+       <option value="">Choose tone…</option>
+       ${Object.entries(SEASONS).map(([id,s])=>`<option value="${id}" ${profile&&profile.season===id?"selected":""}>${s.name} · ${s.tone.toLowerCase()}</option>`).join("")}
+     </select>
+     <button class="btn mini" style="background:var(--ink);color:#fff" onclick="setKnownTone()">Set</button>
+   </div>
    <button class="btn primary" onclick="const v=$('#nameIn').value.trim();profile=Object.assign(profile||{},{name:v});LS('profile',profile);closeSheet();renderHome();toast('Saved ✓')">Save</button>
    <button class="btn ghost" style="margin-top:8px" onclick="closeSheet();go('analyze');startAnalysis()">↺ Retake analysis</button>
    <button class="btn ghost" style="margin-top:8px" onclick="LS('tut',null);localStorage.removeItem('paleta:tut');closeSheet();showTutorial(0)">🎓 Replay tutorial</button>
@@ -1362,6 +1387,14 @@ function toneDetail(id){
    </div>
    <button class="btn accent" onclick="closeSheet();go('analyze');startAnalysis()">📸 Is this me? Analyze</button>
    <button class="btn ghost" style="margin-top:8px" onclick="openToneBrowser()">← All tones</button>`);
+}
+
+function setKnownTone(){
+  const v=$("#knownTone").value;
+  if(!v){toast("Choose a tone first");return;}
+  profile=Object.assign(profile||{},{season:v,conf:100,manual:true,base:profile&&profile.base?profile.base:(SEASONS[v].tone==="COOL"?"BLUE":"YELLOW"),date:new Date().toISOString()});
+  LS("profile",profile);closeSheet();go("report");
+  toast("Tone set: "+SEASONS[v].name+" ✓");
 }
 
 /* ============ TUTORIAL & NUDGES ============ */

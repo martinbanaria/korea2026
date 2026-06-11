@@ -1,5 +1,10 @@
 # Korea · June 2026 🇰🇷
 
+> **New:** [`paleta/`](paleta/) — **PALETA**, a personal color analysis app POC
+> (Korean 9-tone system), inspired by the Colorize studio reports from Seoul.
+> See [paleta/README.md](paleta/README.md). Live at
+> `https://<user>.github.io/korea2026/paleta/` once Pages deploys this branch.
+
 A single-file, mobile-first trip itinerary app for an 8-day Seoul → Busan trip
 (7–14 June 2026), built around a BTS concert at Busan Asiad Stadium.
 

@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>PALETA · Personal Color Analysis</title>
+<meta name="description" content="Korean-style personal color analysis, lookbooks, outfit planning and shopping — made for the Philippines.">
+<meta name="theme-color" content="#F7F4F0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PALETA">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="%231C1B20"/><circle cx="24" cy="24" r="9" fill="%23E0559D"/><circle cx="41" cy="24" r="9" fill="%232D68C4"/><circle cx="24" cy="41" r="9" fill="%2319B6C9"/><circle cx="41" cy="41" r="9" fill="%23F3C53F"/></svg>'>
+<link rel="apple-touch-icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%231C1B20"/><circle cx="24" cy="24" r="9" fill="%23E0559D"/><circle cx="41" cy="24" r="9" fill="%232D68C4"/><circle cx="24" cy="41" r="9" fill="%2319B6C9"/><circle cx="41" cy="41" r="9" fill="%23F3C53F"/></svg>'>
+<style>
+:root{
+  --bg:#F7F4F0; --card:#FFFFFF; --ink:#1C1B20; --ink2:#6E6A72; --line:#ECE7E1;
+  --accent:#C44B8C; --accent-soft:#F7E3EE;
+  --radius:22px; --rs:14px;
+  --shadow:0 10px 30px rgba(28,27,32,.08);
+  --tabbar-h:calc(64px + env(safe-area-inset-bottom));
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;padding-bottom:var(--tabbar-h);overscroll-behavior-y:none}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;margin:0}
+button{font:inherit;border:0;background:none;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+img{max-width:100%}
+.hidden{display:none!important}
+
+/* ---------- shell ---------- */
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 18px 10px;background:rgba(247,244,240,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--serif);font-size:21px;font-weight:700;letter-spacing:.12em}
+.brand .dot{width:22px;height:22px;border-radius:50%;background:conic-gradient(from 20deg,#E0559D,#F3C53F,#19B6C9,#2D68C4,#E0559D)}
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-weight:700;font-size:15px;box-shadow:var(--shadow)}
+main{max-width:760px;margin:0 auto;padding:4px 18px 28px}
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;justify-content:space-around;align-items:stretch;height:var(--tabbar-h);padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10.5px;font-weight:600;color:var(--ink2);position:relative}
+.tabbar button .ico{font-size:21px;line-height:1}
+.tabbar button.on{color:var(--ink)}
+.tabbar button.on::after{content:"";position:absolute;top:6px;width:26px;height:3px;border-radius:3px;background:var(--accent)}
+.nudge-dot{position:absolute;top:8px;right:24%;width:9px;height:9px;border-radius:50%;background:#E5484D;animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(229,72,77,.45)}70%{box-shadow:0 0 0 9px rgba(229,72,77,0)}100%{box-shadow:0 0 0 0 rgba(229,72,77,0)}}
+
+/* ---------- primitives ---------- */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin:14px 0;border:1px solid rgba(255,255,255,.6)}
+.card.flat{box-shadow:none;border:1px solid var(--line)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:999px;font-weight:700;font-size:15px;transition:transform .08s}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--ink);color:#fff;width:100%}
+.btn.accent{background:var(--accent);color:#fff;width:100%}
+.btn.ghost{background:#fff;border:1.5px solid var(--line);width:100%}
+.btn.mini{padding:8px 14px;font-size:13px;width:auto}
+.row{display:flex;gap:10px;align-items:center}
+.row.between{justify-content:space-between}
+.muted{color:var(--ink2);font-size:13.5px}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;background:var(--accent-soft);color:var(--accent)}
+.pill.dark{background:var(--ink);color:#fff}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font-size:14px;font-weight:600;margin:4px 4px 0 0}
+.chip.sel{border-color:var(--ink);background:var(--ink);color:#fff}
+.swatch{width:100%;aspect-ratio:1;border-radius:12px;border:1px solid rgba(0,0,0,.06)}
+.swatch-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:10px}
+.dot-sw{width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,.08);flex:none}
+.divider{height:1px;background:var(--line);margin:16px 0}
+.section-title{display:flex;align-items:baseline;justify-content:space-between;margin:24px 2px 4px}
+.section-title h2{font-size:21px}
+.scroll-x{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.scroll-x>*{scroll-snap-align:start;flex:none}
+
+/* ---------- hero / home ---------- */
+.hero{border-radius:28px;padding:26px 22px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow);margin:12px 0}
+.hero h1{font-size:30px;line-height:1.15}
+.hero .glow{position:absolute;inset:auto -40px -60px auto;width:220px;height:220px;border-radius:50%;filter:blur(10px);opacity:.5}
+.today-dot{width:54px;height:54px;border-radius:18px;flex:none;border:1px solid rgba(0,0,0,.06);box-shadow:inset 0 0 0 4px #fff,var(--shadow)}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.quick-grid button{background:#fff;border-radius:18px;padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;font-weight:700;box-shadow:var(--shadow)}
+.quick-grid .ico{font-size:22px}
+.ai-card{background:linear-gradient(135deg,#1C1B20,#3A3145);color:#fff}
+.ai-card .pill{background:rgba(255,255,255,.14);color:#fff}
+.feature-li{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.09);align-items:flex-start}
+.feature-li:last-child{border-bottom:0}
+.feature-li .ico{font-size:20px;flex:none;margin-top:2px}
+.feature-li b{display:block;font-size:14.5px}
+.feature-li span{font-size:12.5px;opacity:.75}
+
+/* ---------- analyze ---------- */
+.steps{display:flex;gap:6px;margin:10px 0 16px}
+.steps i{flex:1;height:4px;border-radius:4px;background:var(--line)}
+.steps i.on{background:var(--accent)}
+.method{display:flex;gap:14px;align-items:center;text-align:left;width:100%;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:16px;margin:10px 0}
+.method .ico{font-size:30px;flex:none}
+.method b{font-size:16px}
+.method .muted{font-size:12.5px}
+.photo-stage{position:relative;border-radius:24px;overflow:hidden;background:#111;aspect-ratio:3/4;max-height:54vh;margin:0 auto}
+.photo-stage video,.photo-stage canvas.disp{width:100%;height:100%;object-fit:cover;display:block}
+.face-guide{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.face-guide .oval{width:58%;aspect-ratio:3/4;border:2.5px dashed rgba(255,255,255,.85);border-radius:50%}
+.tap-mark{position:absolute;width:26px;height:26px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.35);transform:translate(-50%,-50%);pointer-events:none}
+.sample-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.sample-chip{display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:700}
+.qz .opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px;margin:8px 0;font-weight:600}
+.qz .opt.sel{border-color:var(--ink);box-shadow:0 0 0 1.5px var(--ink)}
+.drape-stage{position:relative;border-radius:24px;aspect-ratio:1;overflow:hidden;display:grid;place-items:center;transition:background .3s}
+.drape-face{width:46%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:4px solid rgba(255,255,255,.9);box-shadow:0 12px 30px rgba(0,0,0,.25);background:#D9B8A5 center/cover no-repeat}
+.drape-pick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.analyzing{ text-align:center;padding:40px 10px}
+.ring{width:92px;height:92px;border-radius:50%;margin:0 auto 18px;background:conic-gradient(var(--accent) var(--p,20%),var(--line) 0);display:grid;place-items:center;transition:background .3s}
+.ring::after{content:"";width:72px;height:72px;border-radius:50%;background:var(--card)}
+
+/* ---------- report ---------- */
+.report-hero{border-radius:28px;overflow:hidden;color:#fff;padding:26px 22px;position:relative}
+.report-hero h1{font-size:34px}
+.report-hero .tone-tag{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);padding:6px 14px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.12em}
+.kw-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.kw-row span{font-size:11.5px;font-weight:800;letter-spacing:.08em;background:rgba(255,255,255,.18);padding:5px 11px;border-radius:999px}
+.named-sw{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px 12px 8px 8px;margin:4px 6px 4px 0}
+.named-sw i{width:34px;height:34px;border-radius:10px;flex:none;border:1px solid rgba(0,0,0,.06)}
+.named-sw b{font-size:13.5px;display:block;line-height:1.2}
+.named-sw small{color:var(--ink2);font-size:11px}
+.meter{height:10px;border-radius:99px;background:linear-gradient(90deg,#D9D4CE,#1C1B20);position:relative;margin:14px 4px 4px}
+.meter i{position:absolute;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:var(--shadow)}
+.bw-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+.bw-cell{border-radius:16px;padding:12px;text-align:center;border:1.5px solid var(--line)}
+.bw-cell .lbl{font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--ink2)}
+.bw-cell b{display:block;font-size:13.5px;margin:4px 0 8px}
+.bw-cell .mini-pal{display:flex;justify-content:center;gap:3px}
+.bw-cell .mini-pal i{width:14px;height:14px;border-radius:4px}
+.bw-cell.best{border-color:var(--accent);background:var(--accent-soft)}
+.bw-cell.worst{opacity:.75}
+.base-pick{display:flex;gap:8px;margin-top:8px}
+.base-pick span{flex:1;text-align:center;padding:9px 4px;border-radius:12px;border:1.5px solid var(--line);font-size:12px;font-weight:700;color:var(--ink2)}
+.base-pick span.on{border-color:var(--ink);color:var(--ink);box-shadow:0 0 0 1.5px var(--ink)}
+
+/* ---------- lookbook ---------- */
+.subtabs{display:flex;gap:8px;margin:12px 0 4px;overflow-x:auto}
+.subtabs button{padding:9px 16px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-weight:700;font-size:13.5px;flex:none}
+.subtabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.look-card{width:178px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
+.look-fig{height:150px;display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;gap:3px;padding:3px}
+.look-fig i{border-radius:10px}
+.look-fig i:first-child{grid-row:1/3;border-radius:14px}
+.look-meta{padding:10px 12px 12px}
+.look-meta b{font-size:14px;display:block}
+.look-meta .muted{font-size:11.5px}
+.heart{position:absolute}
+.guide-card{border-left:5px solid var(--accent);border-radius:14px;background:#fff;padding:14px 16px;margin:10px 0;box-shadow:var(--shadow)}
+.guide-card h3{font-size:16px;margin-bottom:4px}
+.dd{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.dd .col{border-radius:16px;padding:12px;font-size:13px}
+.dd .do{background:#EAF6EE}
+.dd .dont{background:#FBEAEA}
+.dd b{display:block;margin-bottom:6px;font-size:12px;letter-spacing:.1em}
+.dd li{margin:5px 0 5px -18px}
+.post{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.post .pav{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:800}
+.post .colors{display:flex;gap:4px;margin-top:6px}
+.post .colors i{width:22px;height:22px;border-radius:7px;border:1px solid rgba(0,0,0,.06)}
+
+/* ---------- planner ---------- */
+.day-card{display:flex;gap:12px;align-items:center;background:#fff;border-radius:18px;padding:13px 14px;margin:9px 0;box-shadow:var(--shadow)}
+.day-card .dlbl{width:44px;flex:none;text-align:center}
+.day-card .dlbl b{display:block;font-size:15px}
+.day-card .dlbl span{font-size:10px;color:var(--ink2);font-weight:700;letter-spacing:.08em}
+.day-card .fit{display:flex;gap:5px;flex:1;flex-wrap:wrap}
+.day-card .fit i{width:30px;height:30px;border-radius:9px;border:1px solid rgba(0,0,0,.07)}
+.day-card .occ{font-size:12px;color:var(--ink2);font-weight:600;width:100%}
+.slot-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.slot{border:1.5px dashed var(--line);border-radius:14px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--ink2)}
+.slot i{width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,0,0,.07)}
+
+/* ---------- shop ---------- */
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prod{background:#fff;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);position:relative}
+.prod .ph{aspect-ratio:1;display:grid;place-items:center;font-size:52px}
+.prod .match{position:absolute;top:9px;left:9px;background:rgba(255,255,255,.94);border-radius:999px;padding:4px 9px;font-size:10.5px;font-weight:800}
+.prod .pm{padding:10px 12px 12px}
+.prod .pm b{font-size:13.5px;display:block;line-height:1.25}
+.prod .pm .muted{font-size:11px}
+.prod .price{font-weight:800;font-size:14px;margin-top:4px}
+.prod .addbtn{position:absolute;right:9px;bottom:9px;width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;font-size:18px;display:grid;place-items:center}
+
+/* ---------- chat / fab ---------- */
+.fab{position:fixed;right:16px;bottom:calc(var(--tabbar-h) + 14px);z-index:48;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#7C5CFF,#E0559D);color:#fff;font-size:25px;display:grid;place-items:center;box-shadow:0 12px 30px rgba(124,92,255,.4)}
+.chat-log{display:flex;flex-direction:column;gap:10px;padding:6px 2px;max-height:46vh;overflow-y:auto}
+.bub{max-width:84%;padding:11px 14px;border-radius:18px;font-size:14.5px;line-height:1.45;white-space:pre-line}
+.bub.ai{background:#F2EEF9;border-bottom-left-radius:6px;align-self:flex-start}
+.bub.me{background:var(--ink);color:#fff;border-bottom-right-radius:6px;align-self:flex-end}
+.chat-sugg{display:flex;gap:8px;overflow-x:auto;padding:8px 0}
+.chat-sugg button{flex:none;font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:999px;background:#fff;border:1.5px solid var(--line)}
+.chat-input{display:flex;gap:8px;margin-top:6px}
+.chat-input input{flex:1;border:1.5px solid var(--line);border-radius:999px;padding:11px 16px;background:#fff;outline:none}
+.chat-input button{width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;flex:none}
+
+/* ---------- sheets / modals / tutorial ---------- */
+.sheet-bg{position:fixed;inset:0;z-index:80;background:rgba(20,18,24,.45);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{background:var(--bg);width:100%;max-width:760px;max-height:88vh;overflow-y:auto;border-radius:26px 26px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom))}
+.sheet .grab{width:42px;height:5px;border-radius:5px;background:var(--line);margin:6px auto 12px}
+.toast{position:fixed;left:50%;bottom:calc(var(--tabbar-h) + 16px);transform:translateX(-50%);z-index:90;background:var(--ink);color:#fff;padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:700;box-shadow:var(--shadow);animation:fade .2s;max-width:88vw;text-align:center}
+.coach{position:fixed;z-index:95;max-width:300px;background:#fff;border-radius:18px;padding:16px;box-shadow:0 18px 50px rgba(0,0,0,.3)}
+.coach b{font-size:15px}
+.coach p{font-size:13px;color:var(--ink2);margin:6px 0 12px}
+.spotlight{position:fixed;z-index:94;border-radius:18px;box-shadow:0 0 0 9999px rgba(15,13,20,.62);pointer-events:none;transition:all .3s ease}
+.tut-modal{position:fixed;inset:0;z-index:96;background:rgba(15,13,20,.62);display:grid;place-items:center;padding:24px;animation:fade .25s}
+.tut-card{background:#fff;border-radius:26px;padding:26px 22px;max-width:380px;text-align:center}
+.tut-card .big{font-size:46px;margin-bottom:8px}
+.tut-dots{display:flex;justify-content:center;gap:6px;margin:14px 0}
+.tut-dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.tut-dots i.on{background:var(--accent)}
+.nudge-pop{position:fixed;z-index:70;left:16px;right:16px;bottom:calc(var(--tabbar-h) + 14px);background:#fff;border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.25);padding:14px 16px;display:flex;gap:12px;align-items:center;animation:fade .3s}
+.nudge-pop .ico{font-size:26px;flex:none}
+.nudge-pop b{font-size:14px;display:block}
+.nudge-pop p{font-size:12.5px;color:var(--ink2);margin:2px 0 0}
+@media (min-width:760px){ .prod-grid{grid-template-columns:repeat(3,1fr)} .look-card{width:200px} }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="dot"></span>PALETA</div>
+  <div class="row">
+    <button class="pill" id="seasonPill" onclick="go('report')" style="display:none"></button>
+    <button class="avatar" id="avatarBtn" onclick="openProfile()">🙂</button>
+  </div>
+</header>
+
+<main>
+<!-- ================= HOME ================= -->
+<section class="view active" id="view-home">
+  <div id="homeHero"></div>
+  <div class="quick-grid">
+    <button onclick="go('analyze')"><span class="ico">📸</span>Analyze</button>
+    <button onclick="go('report')"><span class="ico">🎨</span>My Report</button>
+    <button onclick="go('planner')"><span class="ico">🗓️</span>Planner</button>
+    <button onclick="openChat()"><span class="ico">✨</span>AI Stylist</button>
+  </div>
+  <div id="todayCard"></div>
+
+  <div class="section-title"><h2>Why PALETA is different</h2></div>
+  <div class="card ai-card">
+    <span class="pill">🤖 AI ROADMAP · POC PREVIEW</span>
+    <div style="margin-top:10px">
+      <div class="feature-li"><span class="ico">🪞</span><div><b>Live AI Mirror Draping</b><span>Point the camera at yourself and swipe through 100+ drapes in real time — like the Korean department-store machines.</span></div></div>
+      <div class="feature-li"><span class="ico">👚</span><div><b>Closet Scan</b><span>Photograph your closet; AI tags every item's color and tells you what to keep, donate, or re-pair.</span></div></div>
+      <div class="feature-li"><span class="ico">🌤️</span><div><b>OOTD Autopilot</b><span>Weather + calendar + your palette = a daily outfit pushed to you at 6 AM.</span></div></div>
+      <div class="feature-li"><span class="ico">💄</span><div><b>Shade Translator PH</b><span>Converts your palette into exact shades from brands sold in PH (Ever Bilena, BLK, Sunnies Face, Careline…).</span></div></div>
+      <div class="feature-li"><span class="ico">👯</span><div><b>Barkada Mode</b><span>Group analysis for weddings, debuts & family photoshoots — AI coordinates everyone's colors into one motif.</span></div></div>
+      <div class="feature-li"><span class="ico">📈</span><div><b>Tone Drift Tracking</b><span>Re-scan monthly; AI tracks tan/lightening over the year and adapts your palette per season.</span></div></div>
+      <div class="feature-li"><span class="ico">🛍️</span><div><b>Palette-Aware Shopping</b><span>Every product in the marketplace is scored against your exact palette — no more guessing in the fitting room.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ANALYZE ================= -->
+<section class="view" id="view-analyze">
+  <div class="section-title"><h2 id="anTitle">Color Analysis</h2><button class="btn mini ghost" id="anRestart" onclick="startAnalysis()" style="display:none">Restart</button></div>
+  <div class="steps" id="anSteps"></div>
+  <div id="anBody"></div>
+</section>
+
+<!-- ================= REPORT ================= -->
+<section class="view" id="view-report"><div id="reportBody"></div></section>
+
+<!-- ================= LOOKS ================= -->
+<section class="view" id="view-looks">
+  <div class="section-title"><h2>Style Studio</h2></div>
+  <div class="subtabs" id="lookTabs">
+    <button class="on" data-t="lookbook" onclick="lookTab('lookbook')">Lookbook</button>
+    <button data-t="guides" onclick="lookTab('guides')">Look Guides</button>
+    <button data-t="saved" onclick="lookTab('saved')">Saved ♥</button>
+    <button data-t="community" onclick="lookTab('community')">Community</button>
+  </div>
+  <div id="looksBody"></div>
+</section>
+
+<!-- ================= PLANNER ================= -->
+<section class="view" id="view-planner">
+  <div class="section-title"><h2>Outfit Planner</h2><button class="btn mini accent" onclick="autoPlanWeek()">✨ Plan my week</button></div>
+  <p class="muted" style="margin:2px 2px 10px">Plan a week of outfits in your colors. Tap a day to build the look.</p>
+  <div id="plannerBody"></div>
+</section>
+
+<!-- ================= SHOP ================= -->
+<section class="view" id="view-shop">
+  <div class="section-title"><h2>Marketplace</h2><button class="btn mini ghost" onclick="openCart()">🛒 <span id="cartCount">0</span></button></div>
+  <div class="subtabs" id="shopCats"></div>
+  <label class="row" style="margin:6px 2px 12px;font-size:13.5px;font-weight:600;gap:8px">
+    <input type="checkbox" id="matchOnly" onchange="renderShop()" checked> Show only items that match my palette
+  </label>
+  <div class="prod-grid" id="prodGrid"></div>
+  <p class="muted" style="margin-top:16px">POC marketplace with demo brands & ₱ pricing. Production layer: live PH merchant feeds (Lazada/Shopee/TikTok Shop APIs, local boutiques) with affiliate or commission revenue.</p>
+</section>
+</main>
+
+<button class="fab" onclick="openChat()" title="AI Stylist">✨</button>
+
+<nav class="tabbar" id="tabbar">
+  <button data-v="home" class="on" onclick="go('home')"><span class="ico">🏠</span>Home</button>
+  <button data-v="analyze" onclick="go('analyze')"><span class="ico">📸</span>Analyze<span class="nudge-dot" id="analyzeNudge" style="display:none"></span></button>
+  <button data-v="looks" onclick="go('looks')"><span class="ico">👗</span>Looks</button>
+  <button data-v="planner" onclick="go('planner')"><span class="ico">🗓️</span>Planner</button>
+  <button data-v="shop" onclick="go('shop')"><span class="ico">🛍️</span>Shop</button>
+</nav>
+
+<div id="modalRoot"></div>
+<div id="tutRoot"></div>
+<canvas id="workCanvas" class="hidden"></canvas>
+<canvas id="shareCanvas" class="hidden" width="1080" height="1350"></canvas>
+<script>
+"use strict";
+/* =====================================================
+   PALETA · data layer
+   9-tone Korean personal color system (Colorize-style)
+   ===================================================== */
+
+const SEASONS = {
+"spring-light":{name:"Spring Light",kor:"봄 라이트",tone:"WARM",accent:"#FF9A8A",
+ keywords:["SOFT","FRESH","LOVELY","LIGHT","YOUTHFUL","WARM"],
+ character:"The Spring Light palette is warm, milky and sun-kissed — yellow-based hues with plenty of light mixed in. Low contrast and gentle saturation keep the face looking soft, friendly and youthful. Heavy or dark colors easily overpower this tone.",
+ palette:["#FFCBB8","#FFB39B","#FF9A8A","#FFD98E","#F5E6A8","#C9E4A6","#9ADBC8","#A7DEE8","#FFE2EC","#F7C8D6","#E8D9F1","#F3E0C8","#FFEFD9","#D4E8D2"],
+ mains:[{n:"Peach",h:"#FFB39B"},{n:"Apricot Cream",h:"#FFD98E"},{n:"Mint Cream",h:"#9ADBC8"}],
+ basics:["#FBF4E6","#D9C2A0","#C9C0B4","#8A715C"],
+ makeup:{lips:[{n:"Coral Peach",h:"#FF8E7A"},{n:"Milky Pink",h:"#FFA9A0"}],blush:[{n:"Peach Glow",h:"#FFC0A8"}],eyes:[{n:"Champagne",h:"#E8CBA8"},{n:"Warm Coral",h:"#D9967F"}]},
+ pattern:"Small, airy patterns · soft florals",accessory:"Shiny gold · small & delicate pieces",metal:"Gold",
+ contrast:"LOW",contrastPos:18,
+ hair:[{n:"Light Golden Brown",h:"#9A6B45"},{n:"Honey Brown",h:"#A87A4E"},{n:"Milk Tea",h:"#B89068"}],
+ second:"spring-bright",worst:"winter-deep",
+ fashion:["Warm, light, low-contrast colors","Soft, fluffy and matte-glow materials","Ivory instead of pure white","Keep dark colors away from the face"]},
+
+"spring-bright":{name:"Spring Bright",kor:"봄 브라이트",tone:"WARM",accent:"#F2552C",
+ keywords:["VIVID","ENERGETIC","CLEAR","PLAYFUL","BOLD","SUNNY"],
+ character:"Spring Bright features warm, yellow-based colors at full clarity — juicy corals, golden yellows and fresh greens. This tone can carry vivid color near the face and looks most alive in clean, saturated shades with a touch of shine.",
+ palette:["#FF5C49","#F2552C","#FF7A3D","#FFA526","#FFD23F","#A6D608","#3FBF5C","#17C3B2","#37BEEF","#FF7BAC","#FF4F7B","#A05CD5","#FFE9A0","#00B3A4"],
+ mains:[{n:"Coral Red",h:"#F2552C"},{n:"Golden Yellow",h:"#FFD23F"},{n:"Fresh Green",h:"#3FBF5C"}],
+ basics:["#FBF4E6","#C99B5F","#1F3F77","#5C4030"],
+ makeup:{lips:[{n:"Tangerine",h:"#FF6A3D"},{n:"Coral Pink",h:"#FF6E80"}],blush:[{n:"Warm Coral",h:"#FF8A6B"}],eyes:[{n:"Gold Shimmer",h:"#D9A84E"},{n:"Bronze",h:"#9C6B3F"}]},
+ pattern:"Clear geometric or pop patterns",accessory:"Shiny gold · colorful enamel",metal:"Gold",
+ contrast:"MEDIUM-HIGH",contrastPos:68,
+ hair:[{n:"Golden Brown",h:"#7A5230"},{n:"Copper Brown",h:"#8E4E2E"},{n:"Warm Black-Brown",h:"#3A2A20"}],
+ second:"spring-light",worst:"summer-mute",
+ fashion:["Warm, vivid, clean colors","Glossy or crisp materials","Pop-color accents and playful prints","Avoid dusty, greyed-out shades"]},
+
+"summer-light":{name:"Summer Light",kor:"여름 라이트",tone:"COOL",accent:"#A9D3EC",
+ keywords:["AIRY","ELEGANT","GENTLE","PURE","SERENE","SOFT"],
+ character:"Summer Light is cool, misty and pastel — blue-based hues with high lightness and low saturation. The effect is clean, elegant and serene. Strong or warm colors quickly look heavy on this tone.",
+ palette:["#F6C9D8","#F3B3C9","#E8C9E8","#CDB7E3","#B9C7EA","#A9D3EC","#A5DDE0","#BFE6D5","#F5ECB8","#F2D5DC","#DCE5F2","#CFE8EA","#E6D9EC","#F0C4CF"],
+ mains:[{n:"Baby Pink",h:"#F3B3C9"},{n:"Powder Blue",h:"#A9D3EC"},{n:"Lavender",h:"#CDB7E3"}],
+ basics:["#FAF8F6","#D8DBDF","#D9C2C0","#7E8CA8"],
+ makeup:{lips:[{n:"Rose Pink",h:"#E891A8"},{n:"Cool Nude Pink",h:"#D9A0A8"}],blush:[{n:"Baby Pink",h:"#F2B8C6"}],eyes:[{n:"Pink Beige",h:"#D9B8B0"},{n:"Soft Lilac",h:"#B9A0C4"}]},
+ pattern:"Watercolor, fine stripes, tonal prints",accessory:"Matte silver · pearl · slim pieces",metal:"Silver",
+ contrast:"LOW",contrastPos:14,
+ hair:[{n:"Ash Brown",h:"#6E5A50"},{n:"Rose Brown",h:"#7A5A58"},{n:"Soft Black",h:"#2E2A2C"}],
+ second:"summer-mute",worst:"autumn-deep",
+ fashion:["Cool pastel, powdery colors","Light, flowing fabrics — chiffon, fine knit","Tone-on-tone, low-contrast styling","Skip mustard, rust and heavy black"]},
+
+"summer-mute":{name:"Summer Mute",kor:"여름 뮤트",tone:"COOL",accent:"#C98DA4",
+ keywords:["CALM","SOPHISTICATED","HAZY","REFINED","SUBTLE","CHIC"],
+ character:"Summer Mute is cool and greyed — dusty roses, slate blues and sages with a veil of softness. It reads understated, intellectual and effortlessly chic. Neon or ultra-vivid color fights with this tone's natural haze.",
+ palette:["#D8A7B8","#C98DA4","#B895AE","#A294C0","#8FA7C9","#7FA3B8","#8FB8B1","#A3BFA8","#C9C3DC","#D9B8C4","#B8C9D9","#937F9E","#6E87A0","#C2A3B0"],
+ mains:[{n:"Dusty Rose",h:"#C98DA4"},{n:"Slate Blue",h:"#8FA7C9"},{n:"Sage",h:"#A3BFA8"}],
+ basics:["#F6F4F2","#B9BCC2","#A08A92","#4A586E"],
+ makeup:{lips:[{n:"Mauve Rose",h:"#B87A8E"},{n:"MLBB Pink",h:"#C4868E"}],blush:[{n:"Dusty Pink",h:"#D9A3AE"}],eyes:[{n:"Mauve Taupe",h:"#9E8490"},{n:"Cool Cocoa",h:"#7A6258"}]},
+ pattern:"Muted checks, tonal knits, brushed textures",accessory:"Matte silver · vintage pieces",metal:"Silver",
+ contrast:"LOW-MEDIUM",contrastPos:32,
+ hair:[{n:"Ash Brown",h:"#5E5048"},{n:"Smoky Brown",h:"#4E4244"},{n:"Charcoal Black",h:"#26242A"}],
+ second:"summer-light",worst:"spring-bright",
+ fashion:["Cool, dusty, greyed colors","Matte and brushed materials — suede, knit","Layered tonal looks over loud prints","Avoid clear neon and orange-gold"]},
+
+"summer-bright":{name:"Summer Bright",kor:"여름 브라이트",tone:"COOL",accent:"#DD2590",
+ keywords:["CLEAR","DEFINED","VIBRANT","MODERN","MYSTERIOUS","FRESH"],
+ character:"The Summer Bright palette features cool, blue-based hues that are clear, crisp and well-defined. With subtle white undertones, these colors exhibit high clarity and saturation. Individuals with this tone are best suited to vibrant, sharply defined shades that enhance a fresh and intriguingly mysterious impression.",
+ palette:["#DD2590","#FF5BA9","#E63E62","#F05A6E","#2D68C4","#1F8AE0","#38C6E8","#00BCD4","#2FD4BE","#7B5CD6","#9333EA","#F8C8DC","#CFE8F7","#E8344E"],
+ mains:[{n:"Fuchsia Pink",h:"#DD2590"},{n:"Bright Blue",h:"#2D68C4"},{n:"Turquoise",h:"#00BCD4"}],
+ basics:["#FFFFFF","#DDE1E6","#3A4150","#1E2638"],
+ makeup:{lips:[{n:"Fuchsia Pink",h:"#DD2590"},{n:"Watermelon",h:"#F05A6E"}],blush:[{n:"Cool Pink",h:"#F2A0BC"}],eyes:[{n:"V-Cut Mauve",h:"#9E7B95"},{n:"Cool Brown",h:"#8A6E63"}]},
+ pattern:"Plain · defined linear patterns",accessory:"Silver · colorful jewels · cubic zirconia",metal:"Silver",
+ contrast:"HIGH",contrastPos:88,
+ hair:[{n:"Black",h:"#16161C"},{n:"Blue Black",h:"#1B2030"},{n:"Cool Dark Brown",h:"#3A3036"}],
+ second:"winter-bright",worst:"autumn-mute",
+ fashion:["Cool, vivid colors","Shiny & sparkly materials","Defined linear patterns / cubic zirconia or color accents","High contrast — defined and vibrant color combinations"]},
+
+"autumn-mute":{name:"Autumn Mute",kor:"가을 뮤트",tone:"WARM",accent:"#B86B4B",
+ keywords:["MELLOW","NATURAL","COZY","EARTHY","RELAXED","CLASSIC"],
+ character:"Autumn Mute is warm and softly toasted — camels, olives and terracottas with the saturation turned down. It feels natural, cozy and quietly classic. Icy or electric colors drain this tone's warmth.",
+ palette:["#C9A07E","#B98A5E","#A98E6F","#C2A878","#9C8D5E","#8A9A5B","#6E7F4E","#6E9387","#A6754B","#B86B4B","#C98E6B","#8E6E53","#B5A642","#C9B89A"],
+ mains:[{n:"Camel",h:"#C2A878"},{n:"Olive",h:"#8A9A5B"},{n:"Terracotta",h:"#B86B4B"}],
+ basics:["#E8DFD0","#B5A98C","#6B5240","#4E4A36"],
+ makeup:{lips:[{n:"Brick Nude",h:"#B06A52"},{n:"Warm Rose Brown",h:"#A8705E"}],blush:[{n:"Soft Apricot",h:"#D9A07E"}],eyes:[{n:"Khaki Gold",h:"#9C8A5E"},{n:"Warm Brown",h:"#7A5A40"}]},
+ pattern:"Earthy checks, paisley, natural textures",accessory:"Matte / antique gold · wood · leather",metal:"Gold",
+ contrast:"LOW",contrastPos:22,
+ hair:[{n:"Warm Brown",h:"#5E422E"},{n:"Chestnut",h:"#6E4A30"},{n:"Dark Khaki Brown",h:"#4A3A28"}],
+ second:"autumn-deep",worst:"summer-bright",
+ fashion:["Warm, muted, earthy colors","Matte natural materials — linen, suede, wool","Tonal layering, relaxed silhouettes","Avoid icy vivids and pure white"]},
+
+"autumn-deep":{name:"Autumn Deep",kor:"가을 딥",tone:"WARM",accent:"#9C3D2E",
+ keywords:["RICH","INTENSE","LUXURIOUS","GROUNDED","SPICY","BOLD"],
+ character:"Autumn Deep is warm color at full depth — rust, forest, mustard and chocolate. It carries richness and quiet power, suiting luxurious matte textures and golden warmth. Pale pastels look washed-out against this tone.",
+ palette:["#9C3D2E","#8B3A2E","#C26B2B","#C49B2E","#8A6E2F","#556B2F","#2E5339","#1F5F5B","#5E2B27","#6E3B3B","#7B4B2A","#4A2C20","#B5651D","#7C5C2E"],
+ mains:[{n:"Rust",h:"#9C3D2E"},{n:"Forest Green",h:"#2E5339"},{n:"Mustard",h:"#C49B2E"}],
+ basics:["#F2E8D5","#B98A5E","#4A2C20","#3B3A26"],
+ makeup:{lips:[{n:"Brick Red",h:"#9C3D2E"},{n:"Spiced Brown",h:"#8E4A38"}],blush:[{n:"Terracotta",h:"#C2785E"}],eyes:[{n:"Bronze",h:"#8E6A3F"},{n:"Espresso",h:"#4E3526"}]},
+ pattern:"Animal prints, rich paisley, herringbone",accessory:"Gold · tortoise shell · leather",metal:"Gold",
+ contrast:"MEDIUM-HIGH",contrastPos:70,
+ hair:[{n:"Dark Chocolate",h:"#3A2618"},{n:"Mahogany",h:"#4E2A20"},{n:"Black Brown",h:"#2A1E16"}],
+ second:"autumn-mute",worst:"summer-light",
+ fashion:["Warm, deep, rich colors","Luxurious matte textures — leather, tweed, satin","Gold hardware and warm metallics","Avoid milky pastels and cool grey"]},
+
+"winter-bright":{name:"Winter Bright",kor:"겨울 브라이트",tone:"COOL",accent:"#2745D4",
+ keywords:["SHARP","CHARISMATIC","ICY","DRAMATIC","MODERN","CRISP"],
+ character:"Winter Bright is cool color at maximum clarity and contrast — true red, royal blue, emerald, plus icy near-whites and absolute black. This tone owns drama: sharp lines, saturated statements and high-shine finishes.",
+ palette:["#D7263D","#E0218A","#2745D4","#0047AB","#00A878","#6C2BD9","#F7F7C6","#F6D9E8","#D6E8F7","#15151A","#FFFFFF","#C2186B","#00B7C2","#8A2BE2"],
+ mains:[{n:"True Red",h:"#D7263D"},{n:"Royal Blue",h:"#2745D4"},{n:"Emerald",h:"#00A878"}],
+ basics:["#FFFFFF","#E4E8EE","#33363F","#15151A"],
+ makeup:{lips:[{n:"True Red",h:"#D7263D"},{n:"Blue-Pink",h:"#E0218A"}],blush:[{n:"Icy Pink",h:"#F2B8CE"}],eyes:[{n:"Silver Shimmer",h:"#C9CDD6"},{n:"Charcoal",h:"#4A4E58"}]},
+ pattern:"Plain blocks · sharp geometrics · pinstripe",accessory:"Shiny silver · crystal · statement pieces",metal:"Silver",
+ contrast:"VERY HIGH",contrastPos:96,
+ hair:[{n:"Jet Black",h:"#101015"},{n:"Blue Black",h:"#151B2A"},{n:"Ash Black-Brown",h:"#2E2A30"}],
+ second:"summer-bright",worst:"autumn-mute",
+ fashion:["Cool, saturated, high-contrast colors","Crisp structured fabrics with sheen","Black & white as a power pairing","Avoid dusty earth tones and beige"]},
+
+"winter-deep":{name:"Winter Deep",kor:"겨울 딥",tone:"COOL",accent:"#7A1F3D",
+ keywords:["DEEP","ELEGANT","POWERFUL","MYSTERIOUS","FORMAL","SLEEK"],
+ character:"Winter Deep is the night palette — burgundy, navy, pine and plum anchored by black. Cool, deep and polished, it commands attention in formal, minimal styling. Light warm shades dilute its presence.",
+ palette:["#7A1F3D","#5C1A33","#9B1D64","#B0203A","#1B2A52","#11182E","#0F4D3F","#14524A","#4B2173","#5E2750","#121217","#2C2F38","#E8EAF0","#6B0F1A"],
+ mains:[{n:"Burgundy",h:"#7A1F3D"},{n:"Navy",h:"#1B2A52"},{n:"Deep Emerald",h:"#0F4D3F"}],
+ basics:["#FFFFFF","#E8EAF0","#2C2F38","#121217"],
+ makeup:{lips:[{n:"Wine",h:"#7A1F3D"},{n:"Plum Red",h:"#8E2347"}],blush:[{n:"Cool Berry",h:"#C46A8A"}],eyes:[{n:"Smoky Plum",h:"#5E4458"},{n:"Graphite",h:"#3E3E46"}]},
+ pattern:"Solid blocks · minimal · fine pinstripe",accessory:"Silver / white gold · onyx · pearl",metal:"Silver",
+ contrast:"HIGH",contrastPos:86,
+ hair:[{n:"Jet Black",h:"#101015"},{n:"Espresso Black",h:"#1E1612"},{n:"Deep Burgundy",h:"#3A1A22"}],
+ second:"winter-bright",worst:"spring-light",
+ fashion:["Cool, deep, saturated colors","Sleek polished materials — satin, fine wool","Monochrome and minimal silhouettes","Avoid light warm pastels and camel"]}
+};
+
+const SKIN_NAMES=[
+ {n:"Porcelain",h:"#F3DFD3"},{n:"Cameo Rose",h:"#EFC3BD"},{n:"Warm Ivory",h:"#F2D7B6"},
+ {n:"Rose Beige",h:"#E3B9A8"},{n:"Honey Beige",h:"#DDAE85"},{n:"Golden Tan",h:"#C98F62"},
+ {n:"Honey Morena",h:"#B97F52"},{n:"Caramel",h:"#A86B3F"},{n:"Amber",h:"#8E5631"},{n:"Espresso",h:"#5F3A24"}];
+
+const QUIZ=[
+ {q:"Look at the veins on your wrist in daylight. What do you see?",opts:[
+   {t:"Mostly blue or purple",fx:{tone:-2}},{t:"Mostly green or olive",fx:{tone:2}},{t:"Honestly, a mix of both",fx:{tone:0}}]},
+ {q:"Which jewelry makes your skin look healthier?",opts:[
+   {t:"Silver / white gold",fx:{tone:-1.5}},{t:"Yellow gold",fx:{tone:1.5}},{t:"Both look fine",fx:{tone:0}}]},
+ {q:"How does your skin react to the sun?",opts:[
+   {t:"I redden or burn first",fx:{tone:-1,depth:-0.5}},{t:"I tan agad — golden glow",fx:{tone:1,depth:0.5}},{t:"I tan deep and fast",fx:{depth:1}}]},
+ {q:"Your natural hair color is closest to…",opts:[
+   {t:"Soft / light brown",fx:{depth:-1,contrast:-1}},{t:"Dark brown",fx:{depth:0}},{t:"Jet black",fx:{depth:0.5,contrast:1.5}}]},
+ {q:"When you wear very vivid colors near your face…",opts:[
+   {t:"My face lights up ✨",fx:{clarity:2}},{t:"The color wears me — overwhelming",fx:{clarity:-2}},{t:"Depends on the color",fx:{clarity:0}}]},
+ {q:"Pure white tee vs cream tee — which flatters you more?",opts:[
+   {t:"Pure white",fx:{tone:-1}},{t:"Cream / ivory",fx:{tone:1}},{t:"I really can't tell",fx:{tone:0}}]}
+];
+
+const DRAPES=[
+ {title:"Which makes your face look brighter?",a:{h:"#FF7757",l:"Warm Coral",fx:{tone:2}},b:{h:"#DD2590",l:"Cool Fuchsia",fx:{tone:-2}}},
+ {title:"Which feels more harmonious on you?",a:{h:"#C2A878",l:"Camel",fx:{tone:1.5,clarity:-0.5}},b:{h:"#1E2638",l:"Charcoal Navy",fx:{tone:-1.5,contrast:0.5}}},
+ {title:"Which keeps your features defined?",a:{h:"#C98DA4",l:"Dusty Rose",fx:{clarity:-2}},b:{h:"#E0218A",l:"Vivid Magenta",fx:{clarity:2}}},
+ {title:"And against your skin — which white wins?",a:{h:"#F7EBD8",l:"Ivory",fx:{tone:1,depth:-0.5}},b:{h:"#FFFFFF",l:"Pure White",fx:{tone:-1,contrast:0.5}}}
+];
+
+/* look templates: slots reference [kind,index] — p=palette, m=mains, b=basics */
+const LOOK_TEMPLATES=[
+ {name:"Office Power",occ:"Office",icon:"💼",slots:{Top:["m",0],Bottom:["b",3],Shoes:["b",2],Accent:["p",4]}},
+ {name:"Sunday Brunch",occ:"Brunch",icon:"🥞",slots:{Top:["p",11],Bottom:["b",1],Shoes:["b",0],Accent:["m",2]}},
+ {name:"Beach Day",occ:"Beach",icon:"🏝️",slots:{Top:["m",2],Bottom:["b",0],Shoes:["p",12],Accent:["p",3]}},
+ {name:"Wedding Guest",occ:"Wedding",icon:"💒",slots:{Top:["p",9],Bottom:["p",9],Shoes:["b",1],Accent:["m",0]}},
+ {name:"Night Out",occ:"Night out",icon:"🌙",slots:{Top:["b",3],Bottom:["b",3],Shoes:["m",0],Accent:["p",6]}},
+ {name:"Date Night",occ:"Date",icon:"💘",slots:{Top:["m",0],Bottom:["b",2],Shoes:["b",3],Accent:["p",8]}},
+ {name:"Barkada Hang",occ:"Casual",icon:"🧋",slots:{Top:["p",5],Bottom:["b",1],Shoes:["b",0],Accent:["m",1]}},
+ {name:"Big Presentation",occ:"Office",icon:"🎤",slots:{Top:["b",0],Bottom:["b",3],Shoes:["b",2],Accent:["m",1]}}
+];
+const OCCASIONS=["Office","Casual","Date","Wedding","Beach","Brunch","Night out","Church","Errands"];
+
+const PRODUCTS=[
+ {id:1,name:"Silk Cami",brand:"Luna Manila",cat:"Tops",price:1290,hex:"#DD2590",emoji:"👚"},
+ {id:2,name:"Linen Button-Down",brand:"Isla Atelier",cat:"Tops",price:1590,hex:"#F7EBD8",emoji:"👔"},
+ {id:3,name:"Knit Polo",brand:"Bayani Basics",cat:"Tops",price:990,hex:"#2D68C4",emoji:"👕"},
+ {id:4,name:"Puff-Sleeve Blouse",brand:"Maya & Co.",cat:"Tops",price:1190,hex:"#F3B3C9",emoji:"👚"},
+ {id:5,name:"Boxy Tee",brand:"Bayani Basics",cat:"Tops",price:590,hex:"#C2A878",emoji:"👕"},
+ {id:6,name:"Slip Dress",brand:"Luna Manila",cat:"Dresses",price:2190,hex:"#7A1F3D",emoji:"👗"},
+ {id:7,name:"Terno-Inspired Midi",brand:"Diwata Studio",cat:"Dresses",price:3490,hex:"#00BCD4",emoji:"👗"},
+ {id:8,name:"Floral Sundress",brand:"Siargao Supply",cat:"Dresses",price:1490,hex:"#C26B2B",emoji:"👗"},
+ {id:9,name:"Mini Crossbody",brand:"Maya & Co.",cat:"Bags",price:1890,hex:"#15151A",emoji:"👜"},
+ {id:10,name:"Woven Abaca Tote",brand:"Habi Goods",cat:"Bags",price:1290,hex:"#B98A5E",emoji:"🧺"},
+ {id:11,name:"Strappy Heels",brand:"Luna Manila",cat:"Shoes",price:2490,hex:"#E63E62",emoji:"👠"},
+ {id:12,name:"Court Sneakers",brand:"Bayani Basics",cat:"Shoes",price:2990,hex:"#FFFFFF",emoji:"👟"},
+ {id:13,name:"Everyday Mules",brand:"Isla Atelier",cat:"Shoes",price:1790,hex:"#8FA7C9",emoji:"🥿"},
+ {id:14,name:"Velvet Tint · Fuchsia",brand:"Diwata Beauty",cat:"Beauty",price:399,hex:"#DD2590",emoji:"💄"},
+ {id:15,name:"Velvet Tint · Terracotta",brand:"Diwata Beauty",cat:"Beauty",price:399,hex:"#B86B4B",emoji:"💄"},
+ {id:16,name:"Cream Blush · Cool Pink",brand:"Diwata Beauty",cat:"Beauty",price:449,hex:"#F2A0BC",emoji:"🩷"},
+ {id:17,name:"Sterling Hoops",brand:"Maya & Co.",cat:"Accessories",price:890,hex:"#C9CDD4",emoji:"💍"},
+ {id:18,name:"Gold-Plated Chain",brand:"Maya & Co.",cat:"Accessories",price:990,hex:"#E8C46B",emoji:"📿"},
+ {id:19,name:"Silk Twill Scarf",brand:"Luna Manila",cat:"Accessories",price:1090,hex:"#9333EA",emoji:"🧣"},
+ {id:20,name:"Pleated Trousers",brand:"Isla Atelier",cat:"Bottoms",price:1690,hex:"#1E2638",emoji:"👖"},
+ {id:21,name:"Linen Wide-Leg",brand:"Siargao Supply",cat:"Bottoms",price:1390,hex:"#E8DFD0",emoji:"👖"},
+ {id:22,name:"Satin Midi Skirt",brand:"Luna Manila",cat:"Bottoms",price:1490,hex:"#0F4D3F",emoji:"🩳"}
+];
+const SHOP_CATS=["All","Tops","Bottoms","Dresses","Shoes","Bags","Beauty","Accessories"];
+
+const COMMUNITY=[
+ {name:"Bea",season:"summer-bright",text:"Wore my fuchsia + white combo to a client pitch. Three compliments before lunch 😭✨",colors:["#DD2590","#FFFFFF","#1E2638"],likes:128},
+ {name:"Migs",season:"autumn-deep",text:"Finally understand why mustard works on me and lilac never did. Barong in cream > pure white!",colors:["#C49B2E","#F2E8D5","#4A2C20"],likes:86},
+ {name:"Cheska",season:"summer-light",text:"Beach trip palette check — powder blue sarong era 🌊",colors:["#A9D3EC","#F6C9D8","#FAF8F6"],likes:201},
+ {name:"Janelle",season:"winter-bright",text:"True red lip for the debut. The drape test does not lie!",colors:["#D7263D","#15151A","#FFFFFF"],likes:154},
+ {name:"Paolo",season:"spring-bright",text:"Coral polo for the family photoshoot — mom approved 📸",colors:["#F2552C","#FBF4E6","#1F3F77"],likes:67}
+];
+
+const TUT_SLIDES=[
+ {ico:"🎨",title:"Welcome to PALETA",body:"Korean-style personal color analysis — the same 9-tone system used in Seoul studios — now in your pocket."},
+ {ico:"📸",title:"Find your true colors",body:"Take a selfie in daylight, answer 6 quick questions, then do a virtual drape test. We blend all three for your result."},
+ {ico:"📋",title:"Get your full report",body:"Best palette, makeup shades, metals, patterns, hair colors — plus your second-best and worst tones, just like the studio report."},
+ {ico:"👗",title:"Style it, plan it, shop it",body:"Browse lookbooks in your palette, plan a week of outfits, and shop items scored against your exact colors."},
+ {ico:"✨",title:"Meet your AI Stylist",body:"Ask anything — \"what do I wear to a wedding?\" — and get answers tuned to your personal palette. Tap the ✨ button anytime."}
+];
+
+const NUDGES={
+ looks:{ico:"💡",title:"Tip: save looks you love",body:"Tap ♥ on any look — saved looks appear in your Planner color picker."},
+ planner:{ico:"✨",title:"Lazy day? Same.",body:"\"Plan my week\" auto-builds 7 harmonized outfits from your palette."},
+ shop:{ico:"🛍️",title:"Match scores are live",body:"Every item is scored against YOUR palette. 90%+ means buy-with-confidence."},
+ report:{ico:"📤",title:"Share your colors",body:"Generate a share card for IG/TikTok — your friends will want one too."}
+};
+</script>
+<script>
+"use strict";
+/* ============ utilities ============ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(msg,ms=2200){$$(".toast").forEach(t=>t.remove());const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),ms);}
+function LS(k,v){if(v===undefined){try{return JSON.parse(localStorage.getItem("paleta:"+k))}catch(e){return null}}localStorage.setItem("paleta:"+k,JSON.stringify(v));}
+function hexToRgb(h){h=h.replace("#","");if(h.length===3)h=h.split("").map(c=>c+c).join("");const n=parseInt(h,16);return[(n>>16)&255,(n>>8)&255,n&255];}
+function rgbToLab(r,g,b){let[x,y,z]=[r,g,b].map(v=>{v/=255;return v>0.04045?Math.pow((v+0.055)/1.055,2.4):v/12.92;});
+ const X=(x*0.4124+y*0.3576+z*0.1805)/0.95047,Y=(x*0.2126+y*0.7152+z*0.0722),Z=(x*0.0193+y*0.1192+z*0.9505)/1.08883;
+ const f=t=>t>0.008856?Math.cbrt(t):(7.787*t)+16/116,fx=f(X),fy=f(Y),fz=f(Z);
+ return{L:116*fy-16,a:500*(fx-fy),b:200*(fy-fz)};}
+function hexLab(h){const[r,g,b]=hexToRgb(h);return rgbToLab(r,g,b);}
+function deltaE(l1,l2){return Math.hypot(l1.L-l2.L,l1.a-l2.a,l1.b-l2.b);}
+function rgbToHex(r,g,b){return"#"+[r,g,b].map(v=>v.toString(16).padStart(2,"0")).join("").toUpperCase();}
+function luminance(h){const[r,g,b]=hexToRgb(h);return(0.299*r+0.587*g+0.114*b)/255;}
+function inkOn(h){return luminance(h)>0.62?"#1C1B20":"#FFFFFF";}
+
+/* ============ state ============ */
+let profile=LS("profile");
+const an={step:0,method:null,samples:[],quiz:[],drape:[],faceUrl:null,stream:null};
+function season(){return profile?SEASONS[profile.season]:null;}
+function activePalette(){const s=season()||SEASONS["summer-bright"];return s.palette.concat(s.basics);}
+
+/* ============ navigation ============ */
+function go(v){
+  $$(".view").forEach(x=>x.classList.remove("active"));
+  $("#view-"+v).classList.add("active");
+  $$("#tabbar button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  window.scrollTo({top:0});
+  stopCam();
+  if(v==="home")renderHome();
+  if(v==="analyze"&&an.step===0)startAnalysis();
+  if(v==="report")renderReport();
+  if(v==="looks")lookTab(curLookTab);
+  if(v==="planner")renderPlanner();
+  if(v==="shop")renderShop();
+  maybeNudge(v);
+}
+
+/* ============ HOME ============ */
+function renderHome(){
+  const s=season();
+  $("#analyzeNudge").style.display=profile?"none":"block";
+  $("#seasonPill").style.display=profile?"inline-flex":"none";
+  if(profile){$("#seasonPill").textContent="🎨 "+s.name;}
+  $("#avatarBtn").textContent=profile&&profile.name?profile.name[0].toUpperCase():"🙂";
+  const hero=$("#homeHero");
+  if(!s){
+    hero.innerHTML=`<div class="hero" style="background:linear-gradient(135deg,#1C1B20,#4A3145 60%,#7A3B63)">
+      <span class="glow" style="background:#E0559D"></span>
+      <p class="eyebrow" style="color:rgba(255,255,255,.7)">PERSONAL COLOR · KOREAN 9-TONE SYSTEM</p>
+      <h1>Find the colors<br>you were born to wear.</h1>
+      <p style="opacity:.85;font-size:14.5px;margin:10px 0 18px">A 3-minute analysis — selfie, quiz & virtual drapes — gives you the same report the Seoul studios charge ₩150,000 for.</p>
+      <button class="btn accent" style="background:#fff;color:#1C1B20" onclick="go('analyze')">📸 Start my analysis</button>
+    </div>`;
+    $("#todayCard").innerHTML="";
+    return;
+  }
+  const g1=s.palette[0],g2=s.palette[4],g3=s.palette[7];
+  hero.innerHTML=`<div class="hero" style="background:linear-gradient(135deg,${g1},${g2} 55%,${g3})">
+    <span class="glow" style="background:#fff"></span>
+    <p class="eyebrow" style="color:rgba(255,255,255,.85)">${s.tone} TONE · ${esc(s.kor)}</p>
+    <h1 style="color:${inkOn(g2)}">${profile.name?esc(profile.name)+", you're a":"You are a"}<br>${s.name}.</h1>
+    <div class="kw-row">${s.keywords.slice(0,4).map(k=>`<span style="color:${inkOn(g2)}">${k}</span>`).join("")}</div>
+    <div class="row" style="margin-top:18px;gap:10px">
+      <button class="btn mini" style="background:#fff;color:#1C1B20" onclick="go('report')">View full report</button>
+      <button class="btn mini" style="background:rgba(0,0,0,.25);color:#fff" onclick="shareCard()">📤 Share</button>
+    </div>
+  </div>`;
+  const day=Math.floor(Date.now()/864e5);
+  const tc=s.palette[day%s.palette.length];
+  const tipPool=["Pair it with your basics for an instant put-together look.","Even just an accessory in this shade lifts your whole face.","Try it as a lip or a bag if a full top feels too bold.","This shade photographs beautifully on you — OOTD it."];
+  $("#todayCard").innerHTML=`<div class="card"><div class="row between">
+    <div class="row" style="gap:14px"><span class="today-dot" style="background:${tc}"></span>
+    <div><p class="eyebrow">TODAY'S COLOR</p><b style="font-size:16px">${tc}</b>
+    <p class="muted" style="margin:2px 0 0">${tipPool[day%tipPool.length]}</p></div></div>
+    <button class="btn mini ghost" onclick="go('planner')">Plan it</button></div></div>`;
+}
+
+/* ============ ANALYZE FLOW ============ */
+function startAnalysis(){
+  Object.assign(an,{step:0,method:null,samples:[],quiz:[],drape:[],faceUrl:null});
+  renderSteps();
+  $("#anRestart").style.display="none";
+  $("#anTitle").textContent="Color Analysis";
+  $("#anBody").innerHTML=`
+   <p class="muted" style="margin:0 2px 6px">Three quick stages — photo, quiz, virtual drapes — blended into one result, just like an in-person session.</p>
+   <button class="method" onclick="chooseMethod('camera')"><span class="ico">🤳</span><div><b>Take a selfie</b><p class="muted">Best accuracy. Use daylight, no makeup if possible, face the window.</p></div></button>
+   <button class="method" onclick="chooseMethod('upload')"><span class="ico">🖼️</span><div><b>Upload a photo</b><p class="muted">A recent bare-face photo in natural light works great.</p></div></button>
+   <button class="method" onclick="chooseMethod('quiz')"><span class="ico">📝</span><div><b>Skip photo — quiz only</b><p class="muted">No camera needed. Slightly less precise, still very good.</p></div></button>
+   <div class="card flat"><p class="muted" style="margin:0">💡 <b>Pro tip:</b> indirect daylight near a window, no filters, hair pulled back. Avoid yellow indoor bulbs — they trick every color system, even the Korean machines.</p></div>`;
+}
+function renderSteps(){
+  const total=5;
+  $("#anSteps").innerHTML=Array.from({length:total},(_,i)=>`<i class="${i<=an.step?"on":""}"></i>`).join("");
+}
+function chooseMethod(m){
+  an.method=m;an.step=1;renderSteps();
+  $("#anRestart").style.display="inline-flex";
+  if(m==="quiz"){an.step=2;renderSteps();renderQuiz(0);return;}
+  $("#anTitle").textContent="Step 1 · Photo";
+  $("#anBody").innerHTML=`
+    <div class="photo-stage" id="stage">
+      <video id="cam" autoplay playsinline muted class="hidden"></video>
+      <div class="face-guide" id="faceGuide"><div class="oval"></div></div>
+    </div>
+    <div class="sample-row" id="sampleRow"></div>
+    <div id="photoControls" style="margin-top:12px"></div>
+    <input type="file" id="fileIn" accept="image/*" class="hidden">`;
+  if(m==="camera")initCamera();
+  else{
+    const fi=$("#fileIn");
+    fi.onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{drawToWork(img);URL.revokeObjectURL(img.src);};img.src=URL.createObjectURL(f);};
+    $("#photoControls").innerHTML=`<button class="btn primary" onclick="$('#fileIn').click()">🖼️ Choose photo</button>`;
+    fi.click();
+  }
+}
+async function initCamera(){
+  try{
+    an.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:1080}}});
+    const v=$("#cam");v.srcObject=an.stream;v.classList.remove("hidden");
+    $("#photoControls").innerHTML=`<button class="btn primary" onclick="capture()">📸 Capture</button>`;
+  }catch(e){
+    toast("Camera unavailable — upload a photo instead");
+    chooseMethod("upload");
+  }
+}
+function stopCam(){if(an.stream){an.stream.getTracks().forEach(t=>t.stop());an.stream=null;}}
+function capture(){const v=$("#cam");drawToWork(v,v.videoWidth,v.videoHeight,true);stopCam();}
+function drawToWork(src,sw,sh,mirror){
+  sw=sw||src.naturalWidth;sh=sh||src.naturalHeight;
+  const W=720,H=960,wc=$("#workCanvas");wc.width=W;wc.height=H;
+  const ctx=wc.getContext("2d");
+  const scale=Math.max(W/sw,H/sh),cw=W/scale,ch=H/scale,cx=(sw-cw)/2,cy=(sh-ch)/2;
+  ctx.save();
+  if(mirror){ctx.translate(W,0);ctx.scale(-1,1);}
+  ctx.drawImage(src,cx,cy,cw,ch,0,0,W,H);
+  ctx.restore();
+  const stage=$("#stage");
+  stage.querySelector("video")?.classList.add("hidden");
+  let disp=stage.querySelector("canvas.disp");
+  if(!disp){disp=document.createElement("canvas");disp.className="disp";stage.prepend(disp);}
+  disp.width=W;disp.height=H;disp.getContext("2d").drawImage(wc,0,0);
+  $("#faceGuide").innerHTML="";
+  an.samples=[];renderSampleRow();
+  disp.onclick=e=>{const r=disp.getBoundingClientRect();samplePoint((e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height,e.clientX-r.left,e.clientY-r.top,stage);};
+  const fc=document.createElement("canvas");fc.width=fc.height=360;
+  fc.getContext("2d").drawImage(wc,W*0.22,H*0.16,W*0.56,W*0.56,0,0,360,360);
+  an.faceUrl=fc.toDataURL("image/jpeg",0.85);
+  $("#photoControls").innerHTML=`
+    <p class="muted" style="margin:4px 2px 10px">👆 Tap <b>3 spots of bare skin</b> — forehead, cheek, jawline. Avoid shadows, blush and hairline.</p>
+    <div class="row">
+      <button class="btn ghost" style="flex:1" onclick="autoSample()">✨ Auto-detect</button>
+      <button class="btn primary" style="flex:1" id="toQuizBtn" disabled onclick="an.step=2;renderSteps();renderQuiz(0)">Next →</button>
+    </div>`;
+}
+function samplePoint(nx,ny,px,py,stage){
+  if(an.samples.length>=3)return;
+  const wc=$("#workCanvas"),ctx=wc.getContext("2d");
+  const x=Math.round(nx*wc.width),y=Math.round(ny*wc.height),R=7;
+  const d=ctx.getImageData(Math.max(0,x-R),Math.max(0,y-R),R*2+1,R*2+1).data;
+  let r=0,g=0,b=0,n=0;
+  for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
+  r=Math.round(r/n);g=Math.round(g/n);b=Math.round(b/n);
+  const hex=rgbToHex(r,g,b);
+  an.samples.push({hex,lab:rgbToLab(r,g,b)});
+  if(stage&&px!==undefined){const m=document.createElement("span");m.className="tap-mark";m.style.left=px+"px";m.style.top=py+"px";m.style.background=hex;stage.appendChild(m);}
+  renderSampleRow();
+  if(an.samples.length>=3){const btn=$("#toQuizBtn");if(btn)btn.disabled=false;toast("Skin sampled ✓ — tap Next");}
+}
+function autoSample(){
+  an.samples=[];$$(".tap-mark").forEach(m=>m.remove());
+  const stage=$("#stage"),r=stage.getBoundingClientRect();
+  [[0.5,0.34],[0.4,0.5],[0.6,0.5]].forEach(([nx,ny])=>samplePoint(nx,ny,nx*r.width,ny*r.height,stage));
+}
+function renderSampleRow(){
+  $("#sampleRow").innerHTML=an.samples.map((s,i)=>`<span class="sample-chip"><i class="dot-sw" style="width:18px;height:18px;background:${s.hex}"></i>${["Forehead","Cheek","Jaw"][i]||"Skin"} ${s.hex}</span>`).join("")
+   +(an.samples.length?`<button class="sample-chip" onclick="an.samples=[];$$('.tap-mark').forEach(m=>m.remove());renderSampleRow();const b=$('#toQuizBtn');if(b)b.disabled=true;">↺ Reset</button>`:"");
+}
+
+/* ---- quiz ---- */
+function renderQuiz(i){
+  stopCam();
+  $("#anTitle").textContent=`Step 2 · Quiz ${i+1}/${QUIZ.length}`;
+  const q=QUIZ[i];
+  $("#anBody").innerHTML=`<div class="qz card">
+    <h3 style="font-size:18px;margin-bottom:8px">${esc(q.q)}</h3>
+    ${q.opts.map((o,j)=>`<button class="opt" onclick="answerQuiz(${i},${j})">${esc(o.t)}</button>`).join("")}
+  </div>`;
+}
+function answerQuiz(i,j){
+  an.quiz[i]=QUIZ[i].opts[j].fx;
+  if(i+1<QUIZ.length)renderQuiz(i+1);
+  else{an.step=3;renderSteps();renderDrape(0);}
+}
+
+/* ---- virtual draping ---- */
+function renderDrape(i){
+  $("#anTitle").textContent=`Step 3 · Drape Test ${i+1}/${DRAPES.length}`;
+  const d=DRAPES[i];
+  const face=an.faceUrl?`background-image:url(${an.faceUrl})`:`background:${an.samples[0]?an.samples[0].hex:"#D9B8A5"}`;
+  $("#anBody").innerHTML=`
+   <p class="muted" style="margin:0 2px 10px">Imagine this color held under your chin — like the fabric drapes at the studio. <b>${esc(d.title)}</b></p>
+   <div class="drape-stage" id="drapeStage" style="background:${d.a.h}">
+     <div class="drape-face" style="${face};background-size:cover;background-position:center"></div>
+   </div>
+   <div class="drape-pick">
+     <button class="btn ghost" onmouseenter="$('#drapeStage').style.background='${d.a.h}'" ontouchstart="$('#drapeStage').style.background='${d.a.h}'" onclick="pickDrape(${i},'a')"><i class="dot-sw" style="background:${d.a.h}"></i>${esc(d.a.l)}</button>
+     <button class="btn ghost" onmouseenter="$('#drapeStage').style.background='${d.b.h}'" ontouchstart="$('#drapeStage').style.background='${d.b.h}'" onclick="pickDrape(${i},'b')"><i class="dot-sw" style="background:${d.b.h}"></i>${esc(d.b.l)}</button>
+   </div>
+   <p class="muted" style="text-align:center;margin-top:10px">Tap each swatch to preview, choose the one that flatters more.</p>`;
+}
+function pickDrape(i,side){
+  an.drape[i]=DRAPES[i][side].fx;
+  if(i+1<DRAPES.length)renderDrape(i+1);
+  else{an.step=4;renderSteps();runAnalysis();}
+}
+
+/* ---- scoring ---- */
+function classify(){
+  let tone=0,depth=0,clarity=0,contrast=0;
+  let lab=null;
+  if(an.samples.length){
+    const L=an.samples.reduce((s,x)=>s+x.lab.L,0)/an.samples.length;
+    const a=an.samples.reduce((s,x)=>s+x.lab.a,0)/an.samples.length;
+    const b=an.samples.reduce((s,x)=>s+x.lab.b,0)/an.samples.length;
+    lab={L,a,b};
+    const h=Math.atan2(b,a)*180/Math.PI;
+    tone+=Math.max(-2.5,Math.min(2.5,(h-52)/6))*1.2;
+    depth+=Math.max(-2,Math.min(2,(62-L)/8));
+  }
+  for(const fx of [...an.quiz,...an.drape]){
+    if(!fx)continue;
+    tone+=fx.tone||0;depth+=fx.depth||0;clarity+=fx.clarity||0;contrast+=fx.contrast||0;
+  }
+  const warm=tone>=0;
+  let id;
+  if(warm){
+    if(depth>=1.5)id="autumn-deep";
+    else if(clarity>=1)id="spring-bright";
+    else if(depth<=-0.5)id="spring-light";
+    else id="autumn-mute";
+  }else{
+    if(depth>=1.5)id="winter-deep";
+    else if(clarity>=1)id=depth>=0.5?"winter-bright":"summer-bright";
+    else if(depth<=-0.5)id="summer-light";
+    else id="summer-mute";
+  }
+  let base;
+  if(lab){const h=Math.atan2(lab.b,lab.a)*180/Math.PI;base=h<46?"BLUE":h>56?"YELLOW":"NEUTRAL";}
+  else base=Math.abs(tone)<0.8?"NEUTRAL":(warm?"YELLOW":"BLUE");
+  const skinHex=an.samples.length?an.samples[Math.floor(an.samples.length/2)].hex:null;
+  let skinName=null;
+  if(skinHex){const sl=hexLab(skinHex);skinName=SKIN_NAMES.reduce((best,s)=>{const d=deltaE(hexLab(s.h),sl);return d<best.d?{d,n:s.n}:best;},{d:1e9,n:""}).n;}
+  const conf=Math.round(Math.min(96,62+Math.abs(tone)*5+Math.abs(clarity)*4+(an.samples.length?8:0)));
+  return{season:id,conf,base,skinHex,skinName,contrastScore:contrast,date:new Date().toISOString()};
+}
+function runAnalysis(){
+  $("#anTitle").textContent="Analyzing…";
+  $("#anBody").innerHTML=`<div class="analyzing card">
+    <div class="ring" id="anRing"></div>
+    <h3 id="anMsg">Reading your undertone…</h3>
+    <p class="muted" id="anSub">Lab color space conversion</p></div>`;
+  const msgs=[["Reading your undertone…","Lab color space conversion"],["Measuring depth & clarity…","Lightness and chroma axes"],["Cross-checking quiz + drapes…","Weighted tone scoring"],["Matching against 9 Korean tones…","PCCS tone mapping"],["Building your report…","Palette, makeup, metals, hair"]];
+  let p=0;
+  const iv=setInterval(()=>{
+    p++;
+    $("#anRing").style.setProperty("--p",(p*20)+"%");
+    if(msgs[p]){$("#anMsg").textContent=msgs[p][0];$("#anSub").textContent=msgs[p][1];}
+    if(p>=5){
+      clearInterval(iv);
+      const res=classify();
+      profile=Object.assign(profile||{},res);
+      LS("profile",profile);
+      an.step=5;
+      setTimeout(()=>{go("report");toast("✨ Analysis complete!");maybeNudge("report",true);},400);
+    }
+  },650);
+}
+
+/* ============ REPORT ============ */
+function renderReport(){
+  const body=$("#reportBody");
+  if(!profile){body.innerHTML=`<div class="card" style="text-align:center;padding:40px 20px">
+    <div style="font-size:46px">🎨</div><h2 style="margin:10px 0 6px">No report yet</h2>
+    <p class="muted">Run the 3-minute analysis to unlock your personal color report.</p>
+    <button class="btn accent" style="margin-top:14px" onclick="go('analyze')">Start analysis</button></div>`;return;}
+  const s=season();
+  document.documentElement.style.setProperty("--accent",s.accent);
+  const second=SEASONS[s.second],worst=SEASONS[s.worst];
+  const bases=["YELLOW","NEUTRAL","BLUE"];
+  body.innerHTML=`
+  <div class="report-hero" style="background:linear-gradient(140deg,${s.palette[0]},${s.palette[4]} 60%,${s.palette[9]})">
+    <span class="tone-tag">${s.tone} TONE</span>
+    <p class="eyebrow" style="color:rgba(255,255,255,.85)">PERSONAL COLOR TYPE ANALYSIS</p>
+    <h1 style="color:${inkOn(s.palette[4])}">${s.name}</h1>
+    <p style="color:${inkOn(s.palette[4])};opacity:.8;font-weight:700">${esc(s.kor)} · ${profile.conf}% confidence</p>
+    <div class="kw-row">${s.keywords.map(k=>`<span style="color:${inkOn(s.palette[4])}">${k}</span>`).join("")}</div>
+  </div>
+
+  <div class="card"><p class="eyebrow">CHARACTER</p><p style="margin:8px 0 0;font-size:14.5px">${esc(s.character)}</p></div>
+
+  <div class="card"><p class="eyebrow">BEST PALETTE</p>
+    <div class="swatch-grid">${s.palette.map(h=>`<i class="swatch" style="background:${h}" title="${h}"></i>`).join("")}</div>
+  </div>
+
+  <div class="card"><p class="eyebrow">MAIN COLORS</p>
+    <div class="row" style="flex-wrap:wrap;margin-top:6px">${s.mains.map(m=>`<span class="named-sw"><i style="background:${m.h}"></i><span><b>${esc(m.n)}</b><small>${m.h}</small></span></span>`).join("")}</div>
+    <div class="divider"></div><p class="eyebrow">BASIC / NEUTRALS</p>
+    <div class="row" style="margin-top:8px">${s.basics.map(h=>`<i class="dot-sw" style="width:38px;height:38px;border-radius:12px;background:${h}"></i>`).join("")}</div>
+  </div>
+
+  <div class="card"><p class="eyebrow">YOUR SKIN</p>
+    <div class="row" style="margin-top:8px;gap:14px">
+      ${profile.skinHex?`<span class="today-dot" style="background:${profile.skinHex}"></span>`:""}
+      <div><b>${profile.skinName?esc(profile.skinName):"Skin base"}</b><p class="muted" style="margin:0">${profile.base} base undertone</p></div>
+    </div>
+    <div class="base-pick">${bases.map(b=>`<span class="${profile.base===b?"on":""}">${b}<br>Base</span>`).join("")}</div>
+  </div>
+
+  <div class="card"><p class="eyebrow">MAKE-UP</p>
+    <p class="muted" style="margin:6px 0 2px">Lips</p>
+    <div class="row" style="flex-wrap:wrap">${s.makeup.lips.map(m=>`<span class="named-sw"><i style="background:${m.h}"></i><span><b>${esc(m.n)}</b><small>${m.h}</small></span></span>`).join("")}</div>
+    <p class="muted" style="margin:10px 0 2px">Blush · Eyes</p>
+    <div class="row" style="flex-wrap:wrap">${[...s.makeup.blush,...s.makeup.eyes].map(m=>`<span class="named-sw"><i style="background:${m.h}"></i><span><b>${esc(m.n)}</b><small>${m.h}</small></span></span>`).join("")}</div>
+  </div>
+
+  <div class="card"><div class="row between"><div style="flex:1">
+      <p class="eyebrow">PATTERN</p><b style="font-size:14px">${esc(s.pattern)}</b></div>
+      <div style="flex:1"><p class="eyebrow">ACCESSORY</p><b style="font-size:14px">${esc(s.accessory)}</b></div></div>
+    <div class="divider"></div>
+    <p class="eyebrow">CONTRAST</p>
+    <div class="meter"><i style="left:${s.contrastPos}%"></i></div>
+    <div class="row between" style="margin-top:4px"><span class="muted">LOW</span><b style="font-size:13px">${s.contrast}</b><span class="muted">HIGH</span></div>
+  </div>
+
+  <div class="card"><p class="eyebrow">HAIR COLOR</p>
+    <div class="row" style="flex-wrap:wrap;margin-top:6px">${s.hair.map(m=>`<span class="named-sw"><i style="background:${m.h};border-radius:50%"></i><span><b>${esc(m.n)}</b><small>${m.h}</small></span></span>`).join("")}</div>
+  </div>
+
+  <div class="card"><p class="eyebrow">BEST &amp; WORST</p>
+    <div class="bw-grid">
+      <div class="bw-cell best"><span class="lbl">BEST TYPE</span><b>${s.name}</b><div class="mini-pal">${s.palette.slice(0,4).map(h=>`<i style="background:${h}"></i>`).join("")}</div></div>
+      <div class="bw-cell"><span class="lbl">SECOND</span><b>${second.name}</b><div class="mini-pal">${second.palette.slice(0,4).map(h=>`<i style="background:${h}"></i>`).join("")}</div></div>
+      <div class="bw-cell worst"><span class="lbl">WORST</span><b>${worst.name}</b><div class="mini-pal">${worst.palette.slice(0,4).map(h=>`<i style="background:${h}"></i>`).join("")}</div></div>
+    </div>
+  </div>
+
+  <div class="card"><p class="eyebrow">FASHION COLOR DIRECTION</p>
+    ${s.fashion.map((f,i)=>`<div class="row" style="padding:9px 0;border-bottom:${i<s.fashion.length-1?"1px solid var(--line)":"0"}"><span class="pill dark" style="flex:none">${["POINT 1","POINT 2","POINT 3","POINT 4"][i]}</span><span style="font-size:14px;font-weight:600">${esc(f)}</span></div>`).join("")}
+  </div>
+
+  <button class="btn accent" onclick="shareCard()">📤 Generate share card</button>
+  <div class="row" style="margin-top:10px">
+    <button class="btn ghost" style="flex:1" onclick="go('analyze');startAnalysis()">↺ Retake</button>
+    <button class="btn ghost" style="flex:1" onclick="go('planner')">🗓️ Plan outfits</button>
+  </div>
+  <p class="muted" style="text-align:center;margin-top:14px">Analyzed ${new Date(profile.date).toLocaleDateString()} · PALETA POC · inspired by Korean studio reports</p>`;
+}
+
+/* ---- share card ---- */
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+async function shareCard(){
+  if(!profile){go("analyze");return;}
+  const s=season(),c=$("#shareCanvas"),ctx=c.getContext("2d"),W=1080,H=1350;
+  const grad=ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0,s.palette[0]);grad.addColorStop(.55,s.palette[4]);grad.addColorStop(1,s.palette[9]);
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="rgba(255,255,255,.93)";roundRect(ctx,70,150,W-140,H-330,48);ctx.fill();
+  ctx.fillStyle="#1C1B20";ctx.textAlign="center";
+  ctx.font="700 34px Georgia";ctx.fillText("P A L E T A",W/2,240);
+  ctx.font="600 26px -apple-system,sans-serif";ctx.fillStyle="#8A8590";
+  ctx.fillText("PERSONAL COLOR TYPE ANALYSIS",W/2,290);
+  ctx.fillStyle="#1C1B20";ctx.font="700 92px Georgia";
+  ctx.fillText(s.name,W/2,420);
+  ctx.font="700 30px -apple-system,sans-serif";ctx.fillStyle=s.accent;
+  ctx.fillText(s.tone+" TONE · "+s.kor,W/2,475);
+  if(profile.name){ctx.fillStyle="#6E6A72";ctx.font="600 28px -apple-system,sans-serif";ctx.fillText("for "+profile.name,W/2,525);}
+  const sw=104,gap=14,perRow=7,startX=(W-(perRow*sw+(perRow-1)*gap))/2;
+  s.palette.forEach((h,i)=>{
+    const x=startX+(i%perRow)*(sw+gap),y=580+Math.floor(i/perRow)*(sw+gap);
+    ctx.fillStyle=h;roundRect(ctx,x,y,sw,sw,22);ctx.fill();
+  });
+  ctx.fillStyle="#1C1B20";ctx.font="600 27px -apple-system,sans-serif";
+  ctx.fillText(s.keywords.join("  ·  "),W/2,880);
+  ctx.fillStyle="#8A8590";ctx.font="600 24px -apple-system,sans-serif";
+  ctx.fillText("Best metal: "+s.metal+"   ·   Contrast: "+s.contrast,W/2,930);
+  ctx.fillText("Worst tone: "+SEASONS[s.worst].name,W/2,968);
+  ctx.fillStyle="#fff";ctx.font="700 30px -apple-system,sans-serif";
+  ctx.fillText("Find your colors · PALETA",W/2,H-90);
+  c.toBlob(async blob=>{
+    const file=new File([blob],"paleta-"+s.name.toLowerCase().replace(" ","-")+".png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:"My PALETA result",text:"I'm a "+s.name+"! 🎨 Find your personal color with PALETA. #PALETA #PersonalColor #"+s.name.replace(" ","")});return;}catch(e){}
+    }
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=file.name;a.click();
+    toast("Share card downloaded 📥");
+  },"image/png");
+}
+
+/* ============ LOOKS ============ */
+let curLookTab="lookbook";
+function lookTab(t){
+  curLookTab=t;
+  $$("#lookTabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+  const s=season()||SEASONS["summer-bright"];
+  const body=$("#looksBody");
+  const banner=profile?"":`<div class="card flat" style="background:var(--accent-soft);border:0"><p style="margin:0;font-size:13.5px"><b>Previewing Summer Bright.</b> <a href="#" onclick="go('analyze');return false" style="color:var(--accent);font-weight:700">Analyze yourself</a> to personalize every look.</p></div>`;
+  if(t==="lookbook"){
+    const groups={};
+    LOOK_TEMPLATES.forEach(tp=>{(groups[tp.occ]=groups[tp.occ]||[]).push(tp);});
+    body.innerHTML=banner+Object.entries(groups).map(([occ,tps])=>`
+      <div class="section-title"><h2 style="font-size:17px">${esc(occ)}</h2></div>
+      <div class="scroll-x">${tps.map(tp=>lookCard(tp,s)).join("")}</div>`).join("");
+  }
+  if(t==="guides"){
+    const worst=SEASONS[s.worst];
+    body.innerHTML=banner+`
+    <div class="guide-card"><h3>🧥 Capsule wardrobe — ${s.name}</h3>
+      <p class="muted">Build these 8 pieces and everything mixes:</p>
+      <div class="row" style="flex-wrap:wrap;margin-top:8px">
+        ${s.basics.map((h,i)=>`<span class="named-sw"><i style="background:${h}"></i><span><b>${["Tee / shirt","Trouser / skirt","Blazer / outer","Tailored pants"][i]}</b><small>${h}</small></span></span>`).join("")}
+        ${s.mains.map(m=>`<span class="named-sw"><i style="background:${m.h}"></i><span><b>Statement ${m.n}</b><small>top, dress or bag</small></span></span>`).join("")}
+        <span class="named-sw"><i style="background:${s.metal==="Gold"?"#E8C46B":"#C9CDD4"}"></i><span><b>${s.metal} jewelry</b><small>your metal</small></span></span>
+      </div></div>
+    <div class="guide-card"><h3>✅ Do &amp; Don't</h3>
+      <div class="dd">
+        <div class="col do"><b style="color:#2E7D43">DO ✓</b><ul>${s.fashion.slice(0,3).map(f=>`<li>${esc(f)}</li>`).join("")}<li>${s.metal} accessories near the face</li></ul></div>
+        <div class="col dont"><b style="color:#B3382C">DON'T ✗</b><ul>
+          <li>${worst.name} territory: ${worst.mains.map(m=>m.n).join(", ").toLowerCase()}</li>
+          <li>${s.tone==="COOL"?"Orange-gold metals & yellowed beige":"Icy silver-blue & stark cool grey"}</li>
+          <li>${s.contrastPos>60?"Washed-out, all-pastel outfits":"Harsh black blocks right at the face"}</li>
+          <li>Buying on trend instead of on tone</li></ul></div>
+      </div></div>
+    <div class="guide-card"><h3>💄 Beauty cheat sheet</h3>
+      <p class="muted">Screenshot this for the mall:</p>
+      <div class="row" style="flex-wrap:wrap;margin-top:6px">
+        ${s.makeup.lips.map(m=>`<span class="named-sw"><i style="background:${m.h}"></i><span><b>Lip · ${esc(m.n)}</b><small>${m.h}</small></span></span>`).join("")}
+        ${s.makeup.blush.map(m=>`<span class="named-sw"><i style="background:${m.h}"></i><span><b>Blush · ${esc(m.n)}</b><small>${m.h}</small></span></span>`).join("")}
+        ${s.hair.slice(0,2).map(m=>`<span class="named-sw"><i style="background:${m.h};border-radius:50%"></i><span><b>Hair · ${esc(m.n)}</b><small>${m.h}</small></span></span>`).join("")}
+      </div></div>`;
+  }
+  if(t==="saved"){
+    const saved=LS("saved")||[];
+    body.innerHTML=saved.length?saved.map((sv,i)=>{
+      const tp=LOOK_TEMPLATES.find(x=>x.name===sv.t),ss=SEASONS[sv.s];
+      return tp?`<div class="day-card"><div style="font-size:24px">${tp.icon}</div>
+        <div style="flex:1"><b>${esc(tp.name)}</b><p class="muted" style="margin:0">${ss.name} · ${esc(tp.occ)}</p>
+        <div class="fit" style="margin-top:6px">${Object.values(tp.slots).map(sl=>`<i style="background:${resolveSlot(ss,sl)}"></i>`).join("")}</div></div>
+        <button class="btn mini ghost" onclick="unsaveLook(${i})">✕</button></div>`:"";
+    }).join(""):`<div class="card" style="text-align:center;padding:36px"><div style="font-size:40px">🤍</div><p class="muted">No saved looks yet — tap ♥ on any look in the Lookbook.</p></div>`;
+  }
+  if(t==="community"){
+    body.innerHTML=`
+     <div class="card flat" style="background:linear-gradient(135deg,#F7E3EE,#E3ECF7);border:0">
+       <b>👯 Color Twins</b><p class="muted" style="margin:4px 0 0">${profile?`2,418 PALETA users share your <b>${s.name}</b> tone. Here's what they're wearing:`:"See what people with your tone are wearing — analyze first!"}</p></div>
+     ${COMMUNITY.map(p=>{const ps=SEASONS[p.season];return`
+      <div class="post"><span class="pav" style="background:${ps.accent}">${p.name[0]}</span>
+       <div style="flex:1"><div class="row between"><b style="font-size:14px">${esc(p.name)}</b><span class="pill" style="background:${ps.accent}22;color:${ps.accent}">${ps.name}</span></div>
+       <p style="font-size:13.5px;margin:4px 0">${esc(p.text)}</p>
+       <div class="colors">${p.colors.map(h=>`<i style="background:${h}"></i>`).join("")}</div>
+       <p class="muted" style="margin:6px 0 0">♥ ${p.likes} · 💬 ${Math.floor(p.likes/8)}</p></div></div>`;}).join("")}
+     <button class="btn primary" style="margin-top:14px" onclick="shareCard()">📤 Post my palette</button>
+     <p class="muted" style="text-align:center;margin-top:10px">POC feed — production: real accounts, follows, OOTD uploads with AI color-tagging, IG/TikTok cross-posting.</p>`;
+  }
+}
+function resolveSlot(s,[kind,idx]){
+  if(kind==="m")return s.mains[idx%s.mains.length].h;
+  if(kind==="b")return s.basics[idx%s.basics.length];
+  return s.palette[idx%s.palette.length];
+}
+function lookCard(tp,s){
+  const cols=Object.values(tp.slots).map(sl=>resolveSlot(s,sl));
+  const saved=(LS("saved")||[]).some(sv=>sv.t===tp.name);
+  return`<div class="look-card" style="position:relative">
+    <div class="look-fig">${cols.map(h=>`<i style="background:${h}"></i>`).join("")}</div>
+    <button style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border-radius:50%;width:32px;height:32px;font-size:15px" onclick="saveLook('${tp.name.replace(/'/g,"\\'")}')">${saved?"❤️":"🤍"}</button>
+    <div class="look-meta"><b>${tp.icon} ${esc(tp.name)}</b><span class="muted">${Object.keys(tp.slots).join(" · ")}</span>
+    <button class="btn mini ghost" style="margin-top:8px;width:100%" onclick="sendToPlanner('${tp.name.replace(/'/g,"\\'")}')">→ Planner</button></div></div>`;
+}
+function saveLook(name){
+  const s=season()||SEASONS["summer-bright"];
+  let saved=LS("saved")||[];
+  if(saved.some(sv=>sv.t===name)){saved=saved.filter(sv=>sv.t!==name);toast("Removed from saved");}
+  else{saved.push({t:name,s:profile?profile.season:"summer-bright"});toast("Saved to your lookbook ♥");}
+  LS("saved",saved);lookTab(curLookTab);
+}
+function unsaveLook(i){const saved=LS("saved")||[];saved.splice(i,1);LS("saved",saved);lookTab("saved");}
+function sendToPlanner(name){
+  const tp=LOOK_TEMPLATES.find(x=>x.name===name),s=season()||SEASONS["summer-bright"];
+  const plan=LS("plan")||{};
+  const day=(new Date().getDay()+6)%7;
+  plan[day]={occ:tp.occ,slots:Object.fromEntries(Object.entries(tp.slots).map(([k,v])=>[k,resolveSlot(s,v)]))};
+  LS("plan",plan);go("planner");toast(tp.name+" added to today 🗓️");
+}
+
+/* ============ PLANNER ============ */
+const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+function renderPlanner(){
+  const plan=LS("plan")||{};
+  $("#plannerBody").innerHTML=DAYS.map((d,i)=>{
+    const p=plan[i];
+    return`<div class="day-card" onclick="editDay(${i})">
+      <div class="dlbl"><b>${d}</b><span>${p&&p.occ?esc(p.occ.toUpperCase()):"—"}</span></div>
+      <div class="fit">${p?Object.values(p.slots).filter(Boolean).map(h=>`<i style="background:${h}"></i>`).join(""):`<span class="muted">Tap to plan an outfit</span>`}</div>
+      <span style="color:var(--ink2)">›</span></div>`;
+  }).join("")+`<button class="btn ghost" style="margin-top:8px" onclick="if(confirm('Clear the whole week?')){LS('plan',{});renderPlanner();}">Clear week</button>`;
+}
+function autoPlanWeek(){
+  const s=season();
+  if(!s){toast("Analyze your colors first ✨");go("analyze");return;}
+  const plan={};
+  const shuffled=[...LOOK_TEMPLATES].sort(()=>Math.random()-0.5);
+  DAYS.forEach((d,i)=>{
+    const tp=shuffled[i%shuffled.length];
+    plan[i]={occ:tp.occ,slots:Object.fromEntries(Object.entries(tp.slots).map(([k,v])=>[k,resolveSlot(s,v)]))};
+  });
+  LS("plan",plan);renderPlanner();toast("✨ Week planned in your palette!");
+}
+let editingDay=null,editingSlots=null,editingOcc=null;
+function editDay(i){
+  editingDay=i;
+  const plan=LS("plan")||{},p=plan[i]||{occ:"Casual",slots:{}};
+  editingSlots=Object.assign({Top:null,Bottom:null,Shoes:null,Accent:null},p.slots);
+  editingOcc=p.occ||"Casual";
+  openSheet(dayEditorHtml());
+}
+function dayEditorHtml(){
+  return`<h2 style="font-size:20px">${DAYS[editingDay]} outfit</h2>
+   <p class="eyebrow" style="margin-top:12px">OCCASION</p>
+   <div style="margin:6px 0 4px">${OCCASIONS.map(o=>`<button class="chip ${o===editingOcc?"sel":""}" onclick="editingOcc='${o}';refreshSheet(dayEditorHtml())">${o}</button>`).join("")}</div>
+   <p class="eyebrow" style="margin-top:14px">OUTFIT — tap a slot, pick a color</p>
+   <div class="slot-row">${Object.entries(editingSlots).map(([k,v])=>`
+     <button class="slot" onclick="pickColorFor('${k}')">${v?`<i style="background:${v}"></i>`:`<span style="font-size:20px">＋</span>`}${k}</button>`).join("")}</div>
+   <button class="btn accent" onclick="saveDay()">Save ${DAYS[editingDay]}</button>
+   <button class="btn ghost" style="margin-top:8px" onclick="delete (LS('plan')||{})[${editingDay}];const p=LS('plan')||{};delete p[${editingDay}];LS('plan',p);closeSheet();renderPlanner()">Remove outfit</button>`;
+}
+function pickColorFor(slot){
+  const pal=activePalette();
+  refreshSheet(`<h2 style="font-size:20px">Pick a color · ${slot}</h2>
+   <p class="muted">Your palette + neutrals — every choice is already "you".</p>
+   <div class="swatch-grid" style="grid-template-columns:repeat(6,1fr)">
+     ${pal.map(h=>`<button class="swatch" style="background:${h}" onclick="editingSlots['${slot}']='${h}';refreshSheet(dayEditorHtml())"></button>`).join("")}
+   </div>
+   <button class="btn ghost" style="margin-top:14px" onclick="refreshSheet(dayEditorHtml())">← Back</button>`);
+}
+function saveDay(){
+  const plan=LS("plan")||{};
+  plan[editingDay]={occ:editingOcc,slots:editingSlots};
+  LS("plan",plan);closeSheet();renderPlanner();toast(DAYS[editingDay]+" planned ✓");
+}
+
+/* ============ SHOP ============ */
+let curCat="All";
+function matchPct(hex){
+  const pal=activePalette(),l=hexLab(hex);
+  const d=Math.min(...pal.map(p=>deltaE(hexLab(p),l)));
+  return Math.max(40,Math.round(100-d*1.6));
+}
+function renderShop(){
+  $("#shopCats").innerHTML=SHOP_CATS.map(c=>`<button class="${c===curCat?"on":""}" onclick="curCat='${c}';renderShop()">${c}</button>`).join("");
+  $("#cartCount").textContent=(LS("cart")||[]).length;
+  const matchOnly=$("#matchOnly").checked;
+  let items=PRODUCTS.filter(p=>curCat==="All"||p.cat===curCat)
+    .map(p=>({...p,match:matchPct(p.hex)}))
+    .filter(p=>!matchOnly||p.match>=78)
+    .sort((a,b)=>b.match-a.match);
+  $("#prodGrid").innerHTML=items.length?items.map(p=>`
+   <div class="prod">
+     <div class="ph" style="background:${p.hex}1f"><span style="filter:drop-shadow(0 6px 12px ${p.hex}66)">${p.emoji}</span></div>
+     <span class="match" style="color:${p.match>=85?"#2E7D43":p.match>=70?"#9C6B1F":"#B3382C"}">${p.match>=85?"●":"◐"} ${p.match}% match</span>
+     <div class="pm"><b>${esc(p.name)}</b><span class="muted">${esc(p.brand)}</span>
+       <div class="row" style="gap:6px;margin-top:4px"><i class="dot-sw" style="width:16px;height:16px;background:${p.hex}"></i><span class="price">₱${p.price.toLocaleString()}</span></div>
+     </div>
+     <button class="addbtn" onclick="addCart(${p.id})">＋</button>
+   </div>`).join(""):`<div class="card" style="grid-column:1/-1;text-align:center"><p class="muted">No strong matches in this category — that's the app protecting your palette 😌. Untick the filter to browse all.</p></div>`;
+}
+function addCart(id){const c=LS("cart")||[];c.push(id);LS("cart",c);$("#cartCount").textContent=c.length;toast("Added to bag 🛍️");}
+function openCart(){
+  const c=LS("cart")||[];
+  const items=c.map(id=>PRODUCTS.find(p=>p.id===id)).filter(Boolean);
+  const total=items.reduce((s,p)=>s+p.price,0);
+  openSheet(`<h2 style="font-size:20px">Your bag</h2>
+   ${items.length?items.map((p,i)=>`<div class="day-card"><div class="ph" style="font-size:26px">${p.emoji}</div>
+     <div style="flex:1"><b style="font-size:14px">${esc(p.name)}</b><p class="muted" style="margin:0">${esc(p.brand)} · ₱${p.price.toLocaleString()}</p></div>
+     <button class="btn mini ghost" onclick="const c=LS('cart');c.splice(${i},1);LS('cart',c);openCart();renderShop()">✕</button></div>`).join("")
+     +`<div class="row between" style="margin:14px 4px"><b>Total</b><b>₱${total.toLocaleString()}</b></div>
+     <button class="btn accent" onclick="toast('POC checkout — production: GCash / Maya / COD via merchant APIs 💳');LS('cart',[]);closeSheet();renderShop()">Checkout (demo)</button>`
+    :`<p class="muted" style="text-align:center;padding:24px 0">Your bag is empty — go find your colors 🛍️</p>`}`);
+}
+
+/* ============ AI STYLIST CHAT ============ */
+let chatLog=[];
+function openChat(){
+  if(!chatLog.length){
+    const s=season();
+    chatLog=[{ai:true,t:s?`Hi${profile.name?" "+profile.name:""}! I'm your AI stylist. As a ${s.name}, you've got ${s.keywords.slice(0,3).join(", ").toLowerCase()} energy to play with. Ask me anything — outfits, makeup, shopping, events. 💬`:`Hi! I'm your AI stylist. Run the color analysis first and my advice gets 10× sharper — but go ahead, ask me anything! 💬`}];
+  }
+  openSheet(chatHtml());
+  setTimeout(()=>{const el=$("#chatLogEl");if(el)el.scrollTop=el.scrollHeight;},50);
+}
+function chatHtml(){
+  const suggs=["What do I wear to a wedding?","Office outfit ideas","Lipstick shades for me","Can I wear black?","Beach trip colors","Why am I this season?"];
+  return`<div class="row between"><h2 style="font-size:20px">✨ AI Stylist</h2><span class="pill">DEMO BRAIN</span></div>
+   <p class="muted" style="margin:4px 0 8px">POC uses an on-device rulebook. Production: Claude API with your palette, closet & local weather in context.</p>
+   <div class="chat-log" id="chatLogEl">${chatLog.map(m=>`<div class="bub ${m.ai?"ai":"me"}">${esc(m.t)}</div>`).join("")}</div>
+   <div class="chat-sugg">${suggs.map(s=>`<button onclick="askAI('${s.replace(/'/g,"\\'")}')">${s}</button>`).join("")}</div>
+   <div class="chat-input"><input id="chatIn" placeholder="Ask your stylist…" onkeydown="if(event.key==='Enter')askAI()"><button onclick="askAI()">➤</button></div>`;
+}
+function askAI(preset){
+  const inp=$("#chatIn");
+  const q=(preset||inp&&inp.value||"").trim();
+  if(!q)return;
+  chatLog.push({ai:false,t:q});
+  chatLog.push({ai:true,t:aiReply(q)});
+  refreshSheet(chatHtml());
+  setTimeout(()=>{const el=$("#chatLogEl");if(el)el.scrollTop=el.scrollHeight;},50);
+}
+function aiReply(q){
+  q=q.toLowerCase();
+  const s=season();
+  if(!s)return"I can answer better once you've done the analysis! Tap Analyze in the tab bar — it takes 3 minutes. Meanwhile: daylight selfies, no filters. 📸";
+  const m=s.mains,bx=s.basics;
+  if(/wedding|debut|formal|gown|ninang/.test(q))return`Wedding guest as a ${s.name}? Go for a ${m[0].n.toLowerCase()} (${m[0].h}) midi or a deep look from your palette, ${s.metal.toLowerCase()} jewelry, and ${s.makeup.lips[0].n.toLowerCase()} lips. Avoid ${SEASONS[s.worst].mains[0].n.toLowerCase()} — that's ${SEASONS[s.worst].name} territory and it will wash you out in photos.`;
+  if(/office|work|interview|presentation|meeting/.test(q))return`Power formula: ${bx[3]} tailored pieces + a ${m[0].n.toLowerCase()} accent near your face. ${s.contrastPos>60?"You carry high contrast — sharp color-blocking reads as authority on you.":"Keep contrast gentle — tonal layering looks expensive on you."} Finish with ${s.metal.toLowerCase()} accessories.`;
+  if(/lip|makeup|blush|beauty|tint/.test(q))return`Your lip lane: ${s.makeup.lips.map(l=>l.n+" ("+l.h+")").join(" and ")}. Blush: ${s.makeup.blush[0].n.toLowerCase()}. ${s.tone==="COOL"?"Skip orange-corals — they'll yellow your skin.":"Skip blue-pinks — they'll grey you out."} The Shop tab has tints pre-matched to these shades.`;
+  if(/black/.test(q))return s.contrastPos>60?`Yes — black is genuinely yours${s.id==="summer-bright"?"":""}. Wear it crisp and defined, with ${s.metal.toLowerCase()} or a vivid accent like ${m[0].n.toLowerCase()}.`:`Black is heavy for you near the face. Swap to ${bx[3]} (your deep neutral) or keep black below the waist, with ${m[0].n.toLowerCase()} on top.`;
+  if(/beach|swim|summer|island|siargao|boracay/.test(q))return`Beach palette: ${m[2].n.toLowerCase()} swimwear, ${bx[0]} linen cover-up, and a pop of ${s.palette[3]} in your sarong or tote. ${s.tone==="COOL"?"Cool brights + tan lines = unfair advantage.":"Your warmth glows against sand and golden hour."} 🏝️`;
+  if(/jean|denim/.test(q))return`Denim tip: ${s.tone==="COOL"?"stick to clean blue, grey or black-wash denim — avoid yellowed vintage washes":"cream, ecru and warm mid-blue washes love you — skip icy grey denim"}. Pair with a ${m[1].n.toLowerCase()} top and you're done.`;
+  if(/date|dinner|night/.test(q))return`Date night: ${s.palette[9]} or ${m[0].n.toLowerCase()} near the face, ${s.makeup.lips[0].n.toLowerCase()} lip, ${s.metal.toLowerCase()} earrings. One statement, everything else quiet — ${s.keywords[1].toLowerCase()} is your whole vibe.`;
+  if(/rain|ulan|cold|jacket/.test(q))return`Rainy-day fix: a ${bx[2]} outer layer keeps it moody-chic, then break the gloom with ${m[2].n.toLowerCase()} inside. Avoid head-to-toe dark — you lose your ${s.keywords[0].toLowerCase()} edge.`;
+  if(/why|season|result|mean/.test(q))return`Your skin read ${profile.base.toLowerCase()}-base${profile.skinName?" ("+profile.skinName+")":""}, and your quiz + drape picks pointed ${s.tone.toLowerCase()} with ${s.contrast.toLowerCase()} contrast. That lands you in ${s.name}: ${s.character.split(".")[0].toLowerCase()}. Second-best: ${SEASONS[s.second].name}.`;
+  if(/buy|shop|budget|sale/.test(q))return`Smart-buy rule: only items scoring 85%+ in the Shop tab. Start with one ${m[0].n.toLowerCase()} statement piece and ${s.metal.toLowerCase()} hoops — biggest impact per peso. 🛍️`;
+  if(/hi|hello|hey|kumusta|musta/.test(q))return`Hey! Ready to style. Try "what do I wear to a wedding?" or "lipstick shades for me" — I'll answer in your ${s.name} palette.`;
+  return`Great question! Quick take for a ${s.name}: build around ${m.map(x=>x.n.toLowerCase()).join(", ")} with ${bx[0]}/${bx[3]} as anchors, ${s.metal.toLowerCase()} metals, ${s.contrast.toLowerCase()} contrast. (Demo brain — the production AI stylist will handle anything you throw at it.)`;
+}
+
+/* ============ SHEETS / PROFILE ============ */
+function openSheet(html){
+  closeSheet();
+  const bg=document.createElement("div");bg.className="sheet-bg";bg.id="sheetBg";
+  bg.innerHTML=`<div class="sheet" onclick="event.stopPropagation()"><div class="grab"></div><div id="sheetBody">${html}</div></div>`;
+  bg.onclick=closeSheet;
+  document.body.appendChild(bg);
+}
+function refreshSheet(html){const b=$("#sheetBody");if(b)b.innerHTML=html;else openSheet(html);}
+function closeSheet(){$("#sheetBg")?.remove();}
+function openProfile(){
+  openSheet(`<h2 style="font-size:20px">Profile</h2>
+   <p class="eyebrow" style="margin-top:12px">YOUR NAME</p>
+   <input id="nameIn" value="${profile&&profile.name?esc(profile.name):""}" placeholder="e.g. Martin" style="width:100%;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:6px 0 14px;background:#fff;outline:none">
+   ${profile?`<div class="card flat" style="margin:0 0 14px"><div class="row between"><div><b>${SEASONS[profile.season].name}</b><p class="muted" style="margin:0">${profile.base} base · ${profile.conf}% confidence</p></div><div class="row" style="gap:4px">${SEASONS[profile.season].mains.map(m=>`<i class="dot-sw" style="background:${m.h}"></i>`).join("")}</div></div></div>`:""}
+   <button class="btn primary" onclick="const v=$('#nameIn').value.trim();profile=Object.assign(profile||{},{name:v});LS('profile',profile);closeSheet();renderHome();toast('Saved ✓')">Save</button>
+   <button class="btn ghost" style="margin-top:8px" onclick="closeSheet();go('analyze');startAnalysis()">↺ Retake analysis</button>
+   <button class="btn ghost" style="margin-top:8px" onclick="LS('tut',null);localStorage.removeItem('paleta:tut');closeSheet();showTutorial(0)">🎓 Replay tutorial</button>
+   <button class="btn ghost" style="margin-top:8px;color:#B3382C" onclick="if(confirm('Erase profile, plans, saves and bag?')){['profile','plan','saved','cart','tut','nudged'].forEach(k=>localStorage.removeItem('paleta:'+k));profile=null;closeSheet();go('home');toast('All data cleared');}">🗑️ Clear all data</button>
+   <p class="muted" style="text-align:center;margin-top:12px">PALETA POC v1.0 · data lives only on this device</p>`);
+}
+
+/* ============ TUTORIAL & NUDGES ============ */
+function showTutorial(i){
+  $("#tutRoot").innerHTML="";
+  if(i>=TUT_SLIDES.length){LS("tut",{done:true});return;}
+  const sl=TUT_SLIDES[i];
+  $("#tutRoot").innerHTML=`<div class="tut-modal"><div class="tut-card">
+    <div class="big">${sl.ico}</div><h2 style="font-size:22px">${esc(sl.title)}</h2>
+    <p class="muted" style="margin:8px 0 0">${esc(sl.body)}</p>
+    <div class="tut-dots">${TUT_SLIDES.map((_,j)=>`<i class="${j===i?"on":""}"></i>`).join("")}</div>
+    <button class="btn accent" onclick="showTutorial(${i+1})">${i===TUT_SLIDES.length-1?"Let's find my colors →":"Next"}</button>
+    ${i<TUT_SLIDES.length-1?`<button class="btn mini" style="margin-top:8px;color:var(--ink2)" onclick="LS('tut',{done:true});$('#tutRoot').innerHTML=''">Skip tour</button>`:""}
+  </div></div>`;
+  if(i===TUT_SLIDES.length-1){
+    const btn=$("#tutRoot .btn.accent");
+    btn.onclick=()=>{LS("tut",{done:true});$("#tutRoot").innerHTML="";go("analyze");};
+  }
+}
+function maybeNudge(view,force){
+  if(!NUDGES[view])return;
+  const done=LS("nudged")||{};
+  if(done[view]&&!force)return;
+  done[view]=true;LS("nudged",done);
+  const n=NUDGES[view];
+  setTimeout(()=>{
+    const el=document.createElement("div");el.className="nudge-pop";
+    el.innerHTML=`<span class="ico">${n.ico}</span><div style="flex:1"><b>${esc(n.title)}</b><p>${esc(n.body)}</p></div><button class="btn mini ghost" onclick="this.parentElement.remove()">Got it</button>`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),7000);
+  },900);
+}
+
+/* ============ init ============ */
+(function init(){
+  renderHome();
+  if(!(LS("tut")||{}).done)setTimeout(()=>showTutorial(0),600);
+  if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>

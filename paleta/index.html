@@ -1391,7 +1391,11 @@ function openProfile(){
    <button class="btn primary" onclick="const v=$('#nameIn').value.trim();profile=Object.assign(profile||{},{name:v});LS('profile',profile);closeSheet();renderHome();toast('Saved ✓')">Save</button>
    <button class="btn ghost" style="margin-top:8px" onclick="closeSheet();go('analyze');startAnalysis()">↺ Retake analysis</button>
    <button class="btn ghost" style="margin-top:8px" onclick="LS('tut',null);localStorage.removeItem('paleta:tut');closeSheet();showTutorial(0)">🎓 Replay tutorial</button>
-   <button class="btn ghost" style="margin-top:8px;color:#B3382C" onclick="if(confirm('Erase profile, plans, saves and bag?')){['profile','plan','saved','cart','tut','nudged'].forEach(k=>localStorage.removeItem('paleta:'+k));profile=null;closeSheet();go('home');toast('All data cleared');}">🗑️ Clear all data</button>
+   <div class="divider"></div>
+   <p class="eyebrow">SHARE WITH A FRIEND</p>
+   <button class="btn accent" style="margin-top:8px" onclick="friendReset()">👥 Hand to a friend — fresh start</button>
+   <button class="btn ghost" style="margin-top:8px" onclick="shareApp()">🔗 Copy / share the app link</button>
+   <p class="muted" style="margin-top:8px">Tip: if your friend opens the link on <b>their own</b> phone they get a clean app automatically — your results never leave this device. Use “fresh start” only when handing over <b>this</b> device.</p>
    <p class="muted" style="text-align:center;margin-top:12px">PALETA POC v1.0 · data lives only on this device</p>`);
 }
 
@@ -1464,8 +1468,31 @@ function maybeNudge(view,force){
   },900);
 }
 
+/* ============ reset / share ============ */
+function resetAll(){
+  Object.keys(localStorage).filter(k=>k.indexOf("paleta:")===0).forEach(k=>localStorage.removeItem(k));
+  profile=null;chatLog=[];
+  if(typeof mirrorStop==="function")mirrorStop();
+  Object.assign(an,{step:0,method:null,samples:[],quiz:[],faceUrl:null,captured:false,white:null,calMode:false});
+}
+function friendReset(){
+  if(!confirm("Start fresh for your friend?\n\nThis clears your colour results, plans and saved looks from THIS device so they get a clean app. (Your physical Colorize cards are untouched — this only resets the app.)"))return;
+  resetAll();closeSheet();refreshHeader();go("home");showTutorial(0);
+  toast("✨ Fresh start — ready to hand over");
+}
+function shareApp(){
+  const url=location.origin+location.pathname;
+  if(navigator.share){navigator.share({title:"PALETA — find your colours",text:"Find your personal colour with PALETA 🎨",url}).catch(()=>{});}
+  else if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>toast("Link copied — send it to your friend 🔗"),()=>toast(url));}
+  else toast(url);
+}
+
 /* ============ init ============ */
 (function init(){
+  if(/(?:[?&#])reset\b/i.test(location.search+location.hash)){
+    resetAll();
+    try{history.replaceState(null,"",location.pathname);}catch(e){}
+  }
   renderHome();
   if(!(LS("tut")||{}).done)setTimeout(()=>showTutorial(0),600);
   if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
